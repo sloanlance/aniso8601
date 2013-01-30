@@ -8,6 +8,16 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(date.month, 1)
         self.assertEqual(date.day, 1)
 
+        date = aniso8601.parse_year('0001')
+        self.assertEqual(date.year, 1)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_year('19')
+        self.assertEqual(date.year, 1900)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
         with self.assertRaises(ValueError):
             aniso8601.parse_year('0')
 
