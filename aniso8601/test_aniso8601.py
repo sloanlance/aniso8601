@@ -1,4 +1,5 @@
 import unittest
+import datetime
 import aniso8601
 
 class TestParseFunctions(unittest.TestCase):
@@ -204,3 +205,81 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(time.minute, 27)
         self.assertEqual(time.second, 24)
         self.assertEqual(time.microsecond, 120000)
+
+    def test_parse_timezone(self):
+        tzinfoobject = aniso8601.parse_timezone('+00:00')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        tzinfoobject = aniso8601.parse_timezone('+01:00')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '+01:00')
+
+        tzinfoobject = aniso8601.parse_timezone('-01:00')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '-01:00')
+
+        tzinfoobject = aniso8601.parse_timezone('+00:12')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(minutes=12))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:12')
+
+        tzinfoobject = aniso8601.parse_timezone('+01:23')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=1, minutes=23))
+        self.assertEqual(tzinfoobject.tzname(None), '+01:23')
+
+        tzinfoobject = aniso8601.parse_timezone('-01:23')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1, minutes=23))
+        self.assertEqual(tzinfoobject.tzname(None), '-01:23')
+
+        with self.assertRaises(ValueError):
+            aniso8601.parse_timezone('-00:00')
+
+        tzinfoobject = aniso8601.parse_timezone('+0000')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+0000')
+
+        tzinfoobject = aniso8601.parse_timezone('+0100')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '+0100')
+
+        tzinfoobject = aniso8601.parse_timezone('-0100')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '-0100')
+
+        tzinfoobject = aniso8601.parse_timezone('+0012')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(minutes=12))
+        self.assertEqual(tzinfoobject.tzname(None), '+0012')
+
+        tzinfoobject = aniso8601.parse_timezone('+0123')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=1, minutes=23))
+        self.assertEqual(tzinfoobject.tzname(None), '+0123')
+
+        tzinfoobject = aniso8601.parse_timezone('-0123')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1, minutes=23))
+        self.assertEqual(tzinfoobject.tzname(None), '-0123')
+
+        with self.assertRaises(ValueError):
+            aniso8601.parse_timezone('-0000')
+
+        tzinfoobject = aniso8601.parse_timezone('+00')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00')
+
+        tzinfoobject = aniso8601.parse_timezone('+01')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '+01')
+
+        tzinfoobject = aniso8601.parse_timezone('-01')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1))
+        self.assertEqual(tzinfoobject.tzname(None), '-01')
+
+        tzinfoobject = aniso8601.parse_timezone('+12')
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=12))
+        self.assertEqual(tzinfoobject.tzname(None), '+12')
+
+        tzinfoobject = aniso8601.parse_timezone('-12')
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=12))
+        self.assertEqual(tzinfoobject.tzname(None), '-12')
+
+        with self.assertRaises(ValueError):
+            aniso8601.parse_timezone('-00')
