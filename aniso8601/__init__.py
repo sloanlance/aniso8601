@@ -27,18 +27,18 @@ def parse_calendar_date(datestr):
         parseddatetime = datetime.datetime.strptime(datestr, '%Y-%m-%d')
 
         #Since no 'time' is given, cast to a date
-        return datetime.date(parseddatetime.year, parseddatetime.month, parseddatetime.day)
+        return parseddatetime.date()
     elif datestrlen == 8:
         #YYYYMMDD
         parseddatetime = datetime.datetime.strptime(datestr, '%Y%m%d')
 
         #Since no 'time' is given, cast to a date
-        return datetime.date(parseddatetime.year, parseddatetime.month, parseddatetime.day)
+        return parseddatetime.date()
     elif datestrlen == 7:
         #YYYY-MM
         parseddatetime = datetime.datetime.strptime(datestr, '%Y-%m')
 
         #Since no 'time' is given, cast to a date
-        return datetime.date(parseddatetime.year, parseddatetime.month, parseddatetime.day)
+        return parseddatetime.date()
     else:
         raise ValueError('String is not a valid ISO8601 calendar date.')
