@@ -9,3 +9,14 @@ def parse_year(yearstr):
     #day is set to 1.
 
     return datetime.date(int(yearstr), 1, 1)
+
+def parse_calendar_date(datestr):
+    #datestr is of the format YYYY-MM-DD, YYYYMMDD, or YYYY-MM
+    datestrlen = len(datestr)
+
+    if datestrlen == 10:
+        #YYYY-MM-DD
+        parseddatetime = datetime.datetime.strptime(datestr, '%Y-%m-%d')
+
+        #Since no 'time' is given, cast to a date
+        return datetime.date(parseddatetime.year, parseddatetime.month, parseddatetime.day)

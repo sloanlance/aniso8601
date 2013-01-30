@@ -7,3 +7,12 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(date.year, 2013)
         self.assertEqual(date.month, 1)
         self.assertEqual(date.day, 1)
+
+        with self.assertRaises(ValueError):
+            aniso8601.parse_year('0')
+
+    def test_parse_calendar_date(self):
+        date = aniso8601.parse_calendar_date('1981-04-05')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
