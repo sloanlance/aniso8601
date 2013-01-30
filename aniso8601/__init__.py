@@ -2,6 +2,122 @@
 
 import datetime
 
+def parse_date(isodatestr):
+    #Given a string in any ISO8601 date format, return a datetime.date
+    #object that corresponds to the given date. Valid string formats are:
+    #
+    #Y[YYY]
+    #YYYY-MM-DD
+    #YYYYMMDD
+    #YYYY-MM
+    #YYYY-Www
+    #YYYYWww
+    #YYYY-Www-D
+    #YYYYWwwD
+    #YYYY-DDD
+    #YYYYDDD
+    #
+    #Note that the ISO8601 date format of ±YYYYY is expressly not supported
+
+    if isodatestr.startswith('+') or isodatestr.startswith('-'):
+        raise NotImplementedError('ISO8601 extended year representation not supported.')
+
+    if isodatestr.find('W') != -1:
+        #Handle ISO8601 week date format
+        return parse_week_date(isodatestr)
+
+    #If the size of the string of 4 or less, assume its a truncated year representation
+    if len(isodatestr) <= 4:
+        return parse_year(isodatestr)
+
+    datestrsplit = isodatestr.split('-')
+
+    #An ISO string may be a calendar represntation if:
+    # 1) When split on a hyphen, the sizes of the parts are 4, 2, 2 or 4, 2
+    # 2) There are no hyphens, and the length is 8
+
+    #Check case 1
+    if len(datestrsplit) == 2:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 2:
+            return parse_calendar_date(isodatestr)
+
+
+    if len(datestrsplit) == 3:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 2 and len(datestrsplit[2]) == 2:
+            return parse_calendar_date(isodatestr)
+
+    #Check case 2
+    if len(isodatestr) == 8 and isodatestr.find('-') == -1:
+        return parse_calendar_date(isodatestr)
+
+    #An ISO string may be a ordinal date representation if:
+    # 1) When split on a hyphen, the sizes of the parts are 4, 3
+    # 2) There are no hyphens, and the length is 7
+
+    #Check case 1
+    if len(datestrsplit) == 2:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 3:
+            return parse_ordinal_date(isodatestr)
+
+    #Check case 2
+    if len(isodatestr) == 7 and isodatestr.find('-') == -1:
+        return parse_ordinal_date(isodatestr)
+
+    #None of the date representations match
+    raise ValueError('String is not an ISO8601 date, perhaps it represents a time or datetime.')
+
+def parse_time(isotimestr):
+    #Given a string in any ISO8601 time format, return a datetime.time object
+    #that corresponds to the given time. Fixed offset tzdata will be included
+    #if UTC offset is given in the input string. Valid time formats are:
+    #
+    #hh:mm:ss
+    #hhmmss
+    #hh:mm
+    #hhmm
+    #hh
+    #hh:mm:ssZ
+    #hhmmssZ
+    #hh:mmZ
+    #hhmmZ
+    #hhZ
+    #hh:mm:ss±hh:mm
+    #hhmmss±hh:mm
+    #hh:mm±hh:mm
+    #hhmm±hh:mm
+    #hh±hh:mm
+    #hh:mm:ss±hhmm
+    #hhmmss±hhmm
+    #hh:mm±hhmm
+    #hhmm±hhmm
+    #hh±hhmm
+    #hh:mm:ss±hh
+    #hhmmss±hh
+    #hh:mm±hh
+    #hhmm±hh
+    #hh±hh
+
+    #Split the string at the TZ, if necessary
+    if isotimestr.find('+') != -1:
+        timestr = isotimestr[0:isotimestr.find('+')]
+        tzstr = isotimestr[isotimestr.find('+'):]
+    elif isotimestr.find('-') != -1:
+        timestr = isotimestr[0:isotimestr.find('-')]
+        tzstr = isotimestr[isotimestr.find('-'):]
+    elif isotimestr.endswith('Z'):
+        timestr = isotimestr[:-1]
+        tzstr = 'Z'
+    else:
+        timestr = isotimestr
+        tzstr = None
+
+    if tzstr == None:
+        return parse_time_naive(timestr)
+    elif tzstr == 'Z':
+        return parse_time_naive(timestr).replace(tzinfo=UTCOffset('UTC', datetime.timedelta(hours=0)))
+    else:
+        return parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
+
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
     #
@@ -107,13 +223,15 @@ def parse_ordinal_date(datestr):
         #Since no 'time' is given, cast to a date
         return parseddatetime.date()
 
-def parse_time(timestr):
+def parse_time_naive(timestr):
     #timestr is of the format hh:mm:ss, hh:mm, hhmmss, hhmm, hh
     #
     #hh is between 0 and 24, 24 is not allowed in the Python time format, since
     #it represents midnight, a time of 00:00:00 is returned
     #
     #mm is between 0 and 60, with 60 used to denote a leap second
+    #
+    #No tzinfo will be included
 
     if timestr.count(':') == 2:
         #hh:mm:ss

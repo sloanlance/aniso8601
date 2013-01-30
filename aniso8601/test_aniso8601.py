@@ -3,6 +3,229 @@ import datetime
 import aniso8601
 
 class TestParseFunctions(unittest.TestCase):
+    def test_parse_date(self):
+        date = aniso8601.parse_date('2013')
+        self.assertEqual(date.year, 2013)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('0001')
+        self.assertEqual(date.year, 1)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('19')
+        self.assertEqual(date.year, 1900)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('1981-04-05')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
+
+        date = aniso8601.parse_date('19810405')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
+
+        date = aniso8601.parse_date('1981-04')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('2004-W53')
+        self.assertEqual(date.year, 2004)
+        self.assertEqual(date.month, 12)
+        self.assertEqual(date.weekday(), 0)
+
+        date = aniso8601.parse_date('2009-W01')
+        self.assertEqual(date.year, 2008)
+        self.assertEqual(date.month, 12)
+        self.assertEqual(date.weekday(), 0)
+
+        date = aniso8601.parse_date('2004-W53-6')
+        self.assertEqual(date.year, 2005)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('2004W53')
+        self.assertEqual(date.year, 2004)
+        self.assertEqual(date.month, 12)
+        self.assertEqual(date.weekday(), 0)
+
+        date = aniso8601.parse_date('2004W536')
+        self.assertEqual(date.year, 2005)
+        self.assertEqual(date.month, 1)
+        self.assertEqual(date.day, 1)
+
+        date = aniso8601.parse_date('1981-095')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
+
+        date = aniso8601.parse_date('1981095')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
+
+    def test_parse_time(self):
+        time = aniso8601.parse_time('01:23:45')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 45)
+
+        time = aniso8601.parse_time('24:00:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        self.assertEqual(time.second, 0)
+
+        time = aniso8601.parse_time('23:21:28.512400')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+
+        time = aniso8601.parse_time('01:23')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+
+        time = aniso8601.parse_time('24:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+
+        time = aniso8601.parse_time('01:23.4567')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 27)
+        self.assertEqual(time.microsecond, 402000)
+
+        time = aniso8601.parse_time('012345')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 45)
+
+        time = aniso8601.parse_time('240000')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        self.assertEqual(time.second, 0)
+
+        time = aniso8601.parse_time('0123')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+
+        time = aniso8601.parse_time('2400')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+
+        time = aniso8601.parse_time('01')
+        self.assertEqual(time.hour, 1)
+
+        time = aniso8601.parse_time('24')
+        self.assertEqual(time.hour, 0)
+
+        time = aniso8601.parse_time('232128.512400+00:00')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('0123.4567+00:00')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 27)
+        self.assertEqual(time.microsecond, 402000)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('01.4567+00:00')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 27)
+        self.assertEqual(time.second, 24)
+        self.assertEqual(time.microsecond, 120000)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('01:23:45+00:00')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 45)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('24:00:00+00:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        self.assertEqual(time.second, 0)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('23:21:28.512400+00:00')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('01:23+00:00')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('24:00+00:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('01:23.4567+00:00')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 27)
+        self.assertEqual(time.microsecond, 402000)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        time = aniso8601.parse_time('23:21:28.512400+11:15')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=11, minutes=15))
+        self.assertEqual(tzinfoobject.tzname(None), '+11:15')
+
+        time = aniso8601.parse_time('23:21:28.512400-12:34')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=12, minutes=34))
+        self.assertEqual(tzinfoobject.tzname(None), '-12:34')
+
+        time = aniso8601.parse_time('23:21:28.512400Z')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), 'UTC')
+
     def test_parse_year(self):
         date = aniso8601.parse_year('2013')
         self.assertEqual(date.year, 2013)
@@ -133,74 +356,74 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(date.month, 4)
         self.assertEqual(date.day, 5)
 
-    def test_parse_time(self):
-        time = aniso8601.parse_time('01:23:45')
+    def test_parse_time_naive(self):
+        time = aniso8601.parse_time_naive('01:23:45')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 45)
 
-        time = aniso8601.parse_time('24:00:00')
+        time = aniso8601.parse_time_naive('24:00:00')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
         self.assertEqual(time.second, 0)
 
-        time = aniso8601.parse_time('23:21:28.512400')
+        time = aniso8601.parse_time_naive('23:21:28.512400')
         self.assertEqual(time.hour, 23)
         self.assertEqual(time.minute, 21)
         self.assertEqual(time.second, 28)
         self.assertEqual(time.microsecond, 512400)
 
-        time = aniso8601.parse_time('01:23')
+        time = aniso8601.parse_time_naive('01:23')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
 
-        time = aniso8601.parse_time('24:00')
+        time = aniso8601.parse_time_naive('24:00')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
 
-        time = aniso8601.parse_time('01:23.4567')
+        time = aniso8601.parse_time_naive('01:23.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 27)
         self.assertEqual(time.microsecond, 402000)
 
-        time = aniso8601.parse_time('012345')
+        time = aniso8601.parse_time_naive('012345')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 45)
 
-        time = aniso8601.parse_time('240000')
+        time = aniso8601.parse_time_naive('240000')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
         self.assertEqual(time.second, 0)
 
-        time = aniso8601.parse_time('0123')
+        time = aniso8601.parse_time_naive('0123')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
 
-        time = aniso8601.parse_time('2400')
+        time = aniso8601.parse_time_naive('2400')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
 
-        time = aniso8601.parse_time('01')
+        time = aniso8601.parse_time_naive('01')
         self.assertEqual(time.hour, 1)
 
-        time = aniso8601.parse_time('24')
+        time = aniso8601.parse_time_naive('24')
         self.assertEqual(time.hour, 0)
 
-        time = aniso8601.parse_time('232128.512400')
+        time = aniso8601.parse_time_naive('232128.512400')
         self.assertEqual(time.hour, 23)
         self.assertEqual(time.minute, 21)
         self.assertEqual(time.second, 28)
         self.assertEqual(time.microsecond, 512400)
 
-        time = aniso8601.parse_time('0123.4567')
+        time = aniso8601.parse_time_naive('0123.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 27)
         self.assertEqual(time.microsecond, 402000)
 
-        time = aniso8601.parse_time('01.4567')
+        time = aniso8601.parse_time_naive('01.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 27)
         self.assertEqual(time.second, 24)
