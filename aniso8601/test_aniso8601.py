@@ -16,3 +16,8 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(date.year, 1981)
         self.assertEqual(date.month, 4)
         self.assertEqual(date.day, 5)
+
+        date = aniso8601.parse_calendar_date('19810405')
+        self.assertEqual(date.year, 1981)
+        self.assertEqual(date.month, 4)
+        self.assertEqual(date.day, 5)
