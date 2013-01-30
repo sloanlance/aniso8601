@@ -3,7 +3,7 @@ import datetime
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
     #
-    #0000 (0 BC) is not representible as a Python date so a ValueError is
+    #0000 (1 BC) is not representible as a Python date so a ValueError is
     #raised
     #
     #Truncated dates, like '19', refer to 1900-1999 inclusive, we simply parse
