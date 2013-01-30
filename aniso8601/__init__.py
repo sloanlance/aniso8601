@@ -118,6 +118,20 @@ def parse_time(isotimestr):
     else:
         return parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
 
+def parse_datetime(isodatetimestr, delimiter='T'):
+    #Given a string in ISO8601 date time format, return a datetime.datetime
+    #object that corresponds to the given date time.
+    #By default, the ISO8601 specified T delimiter is used to split the
+    #date and time (<date>T<time>). Fixed offset tzdata will be included
+    #if UTC offset is given in the input string.
+
+    isodatestr, isotimestr = isodatetimestr.split(delimiter)
+
+    datepart = parse_date(isodatestr)
+    timepart = parse_time(isotimestr)
+
+    return datetime.datetime.combine(datepart, timepart)
+
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
     #
