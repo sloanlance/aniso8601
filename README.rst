@@ -14,7 +14,8 @@ Features
 
  - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
  - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
- - Parse a date time, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
+ - Parse a datetime, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
+ - Parse a duration, get a `datetime.timedelta <http://docs.python.org/2/library/datetime.html#datetime.timedelta>`_
 
 * UTC offset represented as fixed-offset tzinfo
 * No regular expressions
@@ -104,6 +105,30 @@ A decimal fraction is always allowed on the lowest order element of an ISO 8601 
   datetime.time(22, 33, 30)
   >>> aniso8601.parse_time('23.75')
   datetime.time(23, 45)
+
+Parsing durations
+-----------------
+
+To parse a duration formatted as an ISO 8601 string::
+
+  >>> import aniso8601
+  >>> aniso8601.parse_duration('P1Y2M3DT4H54M6S')
+  datetime.timedelta(428, 17646)
+
+Reduced accuracy is supported::
+
+  >>> aniso8601.parse_duration('P1Y')
+  datetime.timedelta(365)
+
+A decimal fraction is allowed on the lowest order element::
+
+  >>> aniso8601.parse_duration('P1YT3.5M')
+  datetime.timedelta(365, 210)
+
+Parsing a duration from a combined date and time is supported as well::
+
+  >>> aniso8601.parse_duration('P0001-01-02T01:30:5')
+  datetime.timedelta(397, 5405)
 
 Tests
 =====
