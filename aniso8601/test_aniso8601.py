@@ -273,6 +273,19 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+00:00')
 
+    def test_parse_datetime_spaceseperated(self):
+        resultdatetime = aniso8601.parse_datetime('2004-W53-6 23:21:28.512400-12:34', ' ')
+        self.assertEqual(resultdatetime.year, 2005)
+        self.assertEqual(resultdatetime.month, 1)
+        self.assertEqual(resultdatetime.day, 1)
+        self.assertEqual(resultdatetime.hour, 23)
+        self.assertEqual(resultdatetime.minute, 21)
+        self.assertEqual(resultdatetime.second, 28)
+        self.assertEqual(resultdatetime.microsecond, 512400)
+        tzinfoobject = resultdatetime.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=12, minutes=34))
+        self.assertEqual(tzinfoobject.tzname(None), '-12:34')
+
     def test_parse_year(self):
         date = aniso8601.parse_year('2013')
         self.assertEqual(date.year, 2013)
