@@ -518,6 +518,19 @@ def parse_duration_prescribed(durationstr):
 
     return datetime.timedelta(days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
 
+def parse_duration_combined(durationstr):
+    #Period of the form P<date>T<time>
+
+    #Split the string in to its component parts
+    datepart, timepart = durationstr[1:].split('T') #We skip the 'P'
+
+    datevalue = parse_date(datepart)
+    timevalue = parse_time(timepart)
+
+    totaldays = datevalue.year * 365 + datevalue.month * 30 + datevalue.day
+
+    return datetime.timedelta(days=totaldays, hours=timevalue.hour, minutes=timevalue.minute, seconds=timevalue.second, microseconds=timevalue.microsecond)
+
 def _parse_duration_element(durationstr, elementstr):
     #Extracts the specified portion of a duration, for instance, given:
     #durationstr = 'T4H5M6.1234S'

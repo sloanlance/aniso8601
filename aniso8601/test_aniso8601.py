@@ -612,6 +612,17 @@ class TestParseFunctions(unittest.TestCase):
         resultduration = aniso8601.parse_duration_prescribed('P1M')
         self.assertEqual(resultduration.days, 30)
 
+    def test_parse_duration_combined(self):
+        resultduration = aniso8601.parse_duration_combined('P0003-06-04T12:30:05')
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 0)
+
+        resultduration = aniso8601.parse_duration_combined('P0003-06-04T12:30:05.5')
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 500000)
+
     def test_parse_duration_element(self):
         self.assertEqual(aniso8601._parse_duration_element('P1Y2M3D', 'Y'), 1)
         self.assertEqual(aniso8601._parse_duration_element('P1Y2M3D', 'M'), 2)
