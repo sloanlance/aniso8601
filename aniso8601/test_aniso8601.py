@@ -301,6 +301,40 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=12, minutes=34))
         self.assertEqual(tzinfoobject.tzname(None), '-12:34')
 
+    def test_parse_duration(self):
+        resultduration = aniso8601.parse_duration('P1Y2M3DT4H54M6S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+
+        resultduration = aniso8601.parse_duration('P1Y2M3DT4H54M6.5S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = aniso8601.parse_duration('P1Y2M3D')
+        self.assertEqual(resultduration.days, 428)
+
+        resultduration = aniso8601.parse_duration('PT4H54M6.5S')
+        self.assertEqual(resultduration.days, 0)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = aniso8601.parse_duration('P1Y')
+        self.assertEqual(resultduration.days, 365)
+
+        resultduration = aniso8601.parse_duration('P1M')
+        self.assertEqual(resultduration.days, 30)
+
+        resultduration = aniso8601.parse_duration('P0003-06-04T12:30:05')
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 0)
+
+        resultduration = aniso8601.parse_duration('P0003-06-04T12:30:05.5')
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 500000)
+
     def test_parse_year(self):
         date = aniso8601.parse_year('2013')
         self.assertEqual(date.year, 2013)

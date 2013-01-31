@@ -147,6 +147,22 @@ def parse_datetime(isodatetimestr, delimiter='T'):
 
     return datetime.datetime.combine(datepart, timepart)
 
+def parse_duration(durationstr):
+    #Given a string representing an ISO 8601 duration, return a
+    #datetime.timedelta that matches the given duration. Valid formts are:
+    #
+    #PnYnMnDTnHnMnS (or any reduced precision equivalent)
+    #P<date>T<time>
+
+    if durationstr[0] != 'P':
+        raise ValueError('String is not a valid ISO8601 duration.')
+
+    #If Y, M, D, H, or S are in the string, assume it is a specified duration
+    if durationstr.find('Y') != -1 or durationstr.find('M') != -1 or durationstr.find('D') != -1 or durationstr.find('H') != -1 or durationstr.find('S') != -1:
+        return parse_duration_prescribed(durationstr)
+    else:
+        return parse_duration_combined(durationstr)
+
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
     #
