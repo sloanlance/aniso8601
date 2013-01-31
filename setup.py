@@ -3,7 +3,7 @@ try:
 except ImportError:
     from distutils import setup
 
-long_description='''Another ISO 8601 parser for Python
+long_description="""Another ISO 8601 parser for Python
 
 Features
 ========
@@ -114,11 +114,11 @@ References
 
 * `ISO 8601:2004(E) <http://dotat.at/tmp/ISO_8601-2004_E.pdf>`_ (Caution, PDF link)
 * `Wikipedia article on ISO 8601 <http://en.wikipedia.org/wiki/Iso8601>`_
-* `Discussion on alternative ISO 8601 parsers for Python <https://groups.google.com/forum/#!topic/comp.lang.python/Q2w4R89Nq1w>`_'''
+* `Discussion on alternative ISO 8601 parsers for Python <https://groups.google.com/forum/#!topic/comp.lang.python/Q2w4R89Nq1w>`_"""
 
 setup(
     name='aniso8601',
-    version='0.41',
+    version='0.42',
     description='A library for parsing ISO 8601 strings.',
     long_description=long_description,
     author='Brandon Nielsen',
