@@ -88,7 +88,7 @@ A UTC offset can be specified for times::
   >>> aniso8601.parse_time('171819Z')
   datetime.time(17, 18, 19, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbd90>)
 
-Reduced precision is supported::
+Reduced accuracy is supported::
 
   >>> aniso8601.parse_time('21:42')
   datetime.time(21, 42)
