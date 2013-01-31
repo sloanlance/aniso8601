@@ -2,17 +2,20 @@
  aniso8601
 ===========
 
- Another ISO 8601 parser for Python
-------------------------------------
+----------------------------------
+Another ISO 8601 parser for Python
+----------------------------------
 
 Features
 ========
 * Pure Python implementation
 * No extra dependencies
 * Logical behavior
+
  - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
  - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
  - Parse a date time, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
+
 * UTC offset represented as fixed-offset tzinfo
 * No regular expressions
 
