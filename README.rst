@@ -89,12 +89,14 @@ A UTC offset can be specified for times::
   datetime.time(17, 18, 19, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbd90>)
 
 Reduced precision is supported::
+
   >>> aniso8601.parse_time('21:42')
   datetime.time(21, 42)
   >>> aniso8601.parse_time('22')
   datetime.time(22, 0)
 
-A decimal fraction is always allowed on the lowest order element for times::
+A decimal fraction is always allowed on the lowest order element of an ISO 8601 formatted time::
+
   >>> aniso8601.parse_time('22:33.5')
   datetime.time(22, 33, 30)
   >>> aniso8601.parse_time('23.75')
