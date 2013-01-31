@@ -441,6 +441,105 @@ def parse_timezone(tzstr):
     else:
         raise ValueError('String is not a valid ISO8601 time offset.')
 
+def parse_duration_prescribed(durationstr):
+    #durationstr can be of the form PnYnMnDTnHnMnS
+
+    #Make sure only the lowest order element has decimal precision
+    if durationstr.count('.') > 1:
+        raise ValueError('String is not a valid ISO8601 duration.')
+    elif durationstr.count('.') == 1:
+        #There should only ever be 1 letter after a decimal if there is more
+        #then one, the string is invalid
+        lettercount = 0;
+
+        for character in durationstr.split('.')[1]:
+            if character.isalpha() == True:
+                lettercount += 1
+
+            if lettercount > 1:
+                raise ValueError('String is not a valid ISO8601 duration.')
+
+    #Parse the elements of the duration
+    if durationstr.find('T') == -1:
+        if durationstr.find('Y') != -1:
+            years = _parse_duration_element(durationstr, 'Y')
+        else:
+            years = 0
+
+        if durationstr.find('M') != -1:
+            months = _parse_duration_element(durationstr, 'M')
+        else:
+            months = 0
+
+        if durationstr.find('D') != -1:
+            days = _parse_duration_element(durationstr, 'D')
+        else:
+            days = 0
+
+        #No hours, minutes or seconds
+        hours = 0
+        minutes = 0
+        seconds = 0
+    else:
+        firsthalf = durationstr[:durationstr.find('T')]
+        secondhalf = durationstr[durationstr.find('T'):]
+
+        if  firsthalf.find('Y') != -1:
+            years = _parse_duration_element(firsthalf, 'Y')
+        else:
+            years = 0
+
+        if firsthalf.find('M') != -1:
+            months = _parse_duration_element(firsthalf, 'M')
+        else:
+            months = 0
+
+        if firsthalf.find('D') != -1:
+            days = _parse_duration_element(firsthalf, 'D')
+        else:
+            days = 0
+
+        if secondhalf.find('H') != -1:
+            hours = _parse_duration_element(secondhalf, 'H')
+        else:
+            hours = 0
+
+        if secondhalf.find('M') != -1:
+            minutes = _parse_duration_element(secondhalf, 'M')
+        else:
+            minutes = 0
+
+        if secondhalf.find('S') != -1:
+            seconds = _parse_duration_element(secondhalf, 'S')
+        else:
+            seconds = 0
+
+    totaldays = years * 365 + months * 30 + days
+
+    return datetime.timedelta(days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
+
+def _parse_duration_element(durationstr, elementstr):
+    #Extracts the specified portion of a duration, for instance, given:
+    #durationstr = 'T4H5M6.1234S'
+    #elementstr = 'H'
+    #
+    #returns 4
+    #
+    #Note that the string must start with a character, so its assumed the
+    #full duration string would be split at the 'T'
+
+    durationstartindex = 0
+    durationendindex = durationstr.find(elementstr)
+
+    for characterindex in xrange(durationendindex - 1, 0, -1):
+        if durationstr[characterindex].isalpha() == True:
+            durationstartindex = characterindex
+            break
+
+    durationstartindex += 1
+
+    return float(durationstr[durationstartindex:durationendindex])
+
 def _iso_year_start(isoyear):
     #Given an ISO year, returns the equivalent of the start of the year on the
     #Gregorian calendar (which is used by Python)

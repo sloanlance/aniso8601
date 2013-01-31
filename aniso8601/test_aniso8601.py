@@ -581,3 +581,41 @@ class TestParseFunctions(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             aniso8601.parse_timezone('-00')
+
+    def test_parse_duration_prescribed(self):
+        with self.assertRaises(ValueError):
+            aniso8601.parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S')
+
+        with self.assertRaises(ValueError):
+            aniso8601.parse_duration_prescribed('P1Y2M3DT4H5.1234M6S')
+
+        resultduration = aniso8601.parse_duration_prescribed('P1Y2M3DT4H54M6S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+
+        resultduration = aniso8601.parse_duration_prescribed('P1Y2M3DT4H54M6.5S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = aniso8601.parse_duration_prescribed('P1Y2M3D')
+        self.assertEqual(resultduration.days, 428)
+
+        resultduration = aniso8601.parse_duration_prescribed('PT4H54M6.5S')
+        self.assertEqual(resultduration.days, 0)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = aniso8601.parse_duration_prescribed('P1Y')
+        self.assertEqual(resultduration.days, 365)
+
+        resultduration = aniso8601.parse_duration_prescribed('P1M')
+        self.assertEqual(resultduration.days, 30)
+
+    def test_parse_duration_element(self):
+        self.assertEqual(aniso8601._parse_duration_element('P1Y2M3D', 'Y'), 1)
+        self.assertEqual(aniso8601._parse_duration_element('P1Y2M3D', 'M'), 2)
+        self.assertEqual(aniso8601._parse_duration_element('P1Y2M3D', 'D'), 3)
+        self.assertEqual(aniso8601._parse_duration_element('T4H5M6.1234S', 'H'), 4)
+        self.assertEqual(aniso8601._parse_duration_element('T4H5M6.1234S', 'M'), 5)
+        self.assertEqual(aniso8601._parse_duration_element('T4H5M6.1234S', 'S'), 6.1234)
