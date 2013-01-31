@@ -10,9 +10,9 @@ Features
 * Pure Python implementation
 * No extra dependencies
 * Logical behavior
- - Parse a time, get a datetime.time
- - Parse a date, get a datetime.date
- - Parse a date time, get a datetime.datetime
+ - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
+ - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
+ - Parse a date time, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
 * UTC offset represented as fixed-offset tzinfo
 * No regular expressions
 
@@ -22,7 +22,7 @@ Use
 Parsing datetimes
 -----------------
 
-To parse a typical ISO 8601 datetime str::
+To parse a typical ISO 8601 datetime string::
 
   >>> import aniso8601
   >>> aniso8601.parse_datetime('1977-06-10T12:00:00Z')
