@@ -16,9 +16,22 @@ Features
  - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
  - Parse a datetime, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
  - Parse a duration, get a `datetime.timedelta <http://docs.python.org/2/library/datetime.html#datetime.timedelta>`_
+ - Parse an interval, get a tuple of dates or datetimes
+ - Parse a repeating interval, get a date or datetime `generator <http://www.python.org/dev/peps/pep-0255/>`_
 
 * UTC offset represented as fixed-offset tzinfo
 * No regular expressions
+
+Installation
+============
+
+The recommended installation method is to use pip::
+
+  $ pip install aniso8601
+
+Alternatively, you can download the source (git repository hosted at `Bitbucket <https://bitbucket.org/nielsenb/aniso8601>`_) and install directly::
+
+  $ python setup.py install
 
 Use
 ===
