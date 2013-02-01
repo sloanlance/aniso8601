@@ -17,6 +17,8 @@
 
 import datetime
 
+from timezone import parse_timezone, UTCOffset
+
 def parse_date(isodatestr):
     #Given a string in any ISO8601 date format, return a datetime.date
     #object that corresponds to the given date. Valid string formats are:
@@ -514,49 +516,6 @@ def parse_time_naive(timestr):
                 #delta, and return the time component
                 return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=0)) + hoursdelta).time()
 
-def parse_timezone(tzstr):
-    #tzstr can be ±hh:mm, ±hhmm, ±hh, the Z case is handled elsewhere
-
-    tzstrlen = len(tzstr)
-
-    if tzstrlen == 6:
-        #±hh:mm
-        tzhour = int(tzstr[1:3])
-        tzminute = int(tzstr[4:6])
-
-        if tzstr[0] == '+':
-            return UTCOffset(tzstr, datetime.timedelta(hours=tzhour, minutes=tzminute))
-        else:
-            if tzhour == 0 and tzminute == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
-            else:
-                return UTCOffset(tzstr, -datetime.timedelta(hours=tzhour, minutes=tzminute))
-    elif tzstrlen == 5:
-        #±hhmm
-        tzhour = int(tzstr[1:3])
-        tzminute = int(tzstr[3:5])
-
-        if tzstr[0] == '+':
-            return UTCOffset(tzstr, datetime.timedelta(hours=tzhour, minutes=tzminute))
-        else:
-            if tzhour == 0 and tzminute == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
-            else:
-                return UTCOffset(tzstr, -datetime.timedelta(hours=tzhour, minutes=tzminute))
-    elif tzstrlen == 3:
-        #±hh
-        tzhour = int(tzstr[1:3])
-
-        if tzstr[0] == '+':
-            return UTCOffset(tzstr, datetime.timedelta(hours=tzhour))
-        else:
-            if tzhour == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
-            else:
-                return UTCOffset(tzstr, -datetime.timedelta(hours=tzhour))
-    else:
-        raise ValueError('String is not a valid ISO8601 time offset.')
-
 def parse_duration_prescribed(durationstr):
     #durationstr can be of the form PnYnMnDTnHnMnS
 
@@ -705,19 +664,3 @@ def date_generator_unbounded(startdate, timedelta):
 
         #Update the value
         currentdate += timedelta
-
-class UTCOffset(datetime.tzinfo):
-    def __init__(self, name, utcdelta):
-        self._name = name
-        self._utcdelta = utcdelta
-
-    def utcoffset(self, dt):
-        return self._utcdelta
-
-    def tzname(self, dt):
-        return self._name
-
-    def dst(self, dt):
-        #ISO8601 specifies offsets should be different if DST is required,
-        #instead of allowing for a DST to be specified
-        return None
