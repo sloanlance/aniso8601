@@ -201,7 +201,7 @@ Tests
 
 To run the unit tests::
 
-   $ python -m unittest aniso8601.test_aniso8601
+   $ python -m unittest discover aniso8601/tests/
 
 Contributing
 ============
