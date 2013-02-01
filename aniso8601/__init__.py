@@ -166,7 +166,7 @@ def parse_duration(isodurationstr):
 def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
     #Given a string representing an ISO8601 interval, return a
     #tuple of datetime.date or date.datetime objects representing the beginning
-    #an end of the specified interval. Valid formats are:
+    #and end of the specified interval. Valid formats are:
     #
     #<start>/<end>
     #<start>/<duration>
@@ -186,19 +186,24 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
 
     if firstpart[0] == 'P':
         #<duration>/<end>
+        #Notice that these are not returned 'in order' (earlier to later), this
+        #is to maintain consistency with parsing <start>/<end> durations, as
+        #well asmaking repeating interval code cleaner. Users who desire
+        #durations to be in order can use the 'sorted' operator.
+
         #We need to figure out if <end> is a date, or a datetime
         if secondpart.find(datetimedelimiter) != -1:
             #<end> is a datetime
             duration = parse_duration(firstpart)
             enddatetime = parse_datetime(secondpart, delimiter=datetimedelimiter)
 
-            return (enddatetime - duration, enddatetime)
+            return (enddatetime, enddatetime - duration)
         else:
             #<end> must just be a date
             duration = parse_duration(firstpart)
             enddate = parse_date(secondpart)
 
-            return (enddate - duration, enddate)
+            return (enddate, enddate - duration)
     elif secondpart[0] == 'P':
         #<start>/<duration>
         #We need to figure out if <start> is a date, or a datetime
@@ -228,6 +233,35 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
         else:
             #Both parts are dates
             return (parse_date(firstpart), parse_date(secondpart))
+
+def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
+    #Given a string representing an ISO8601 interval repating, return a
+    #generator of datetime.date or date.datetime objects representing the
+    #dates specified by the repeating interval. Valid formats are:
+    #
+    #Rnn/<interval>
+    #R/<interval>
+
+    if isointervalstr[0] != 'R':
+        raise ValueError('String is not a valid ISO8601 repeating interval.')
+
+    #Parse the number of iterations
+    iterationpart, intervalpart = isointervalstr.split(intervaldelimiter, 1)
+
+    if len(iterationpart) > 1:
+        iterations = int(iterationpart[1:])
+    else:
+        iterations = None
+
+    interval = parse_interval(intervalpart, intervaldelimiter, datetimedelimiter)
+
+    intervaltimedelta = interval[1] - interval[0]
+
+    #Now, build and return the generator
+    if iterations != None:
+        return date_generator(interval[0], intervaltimedelta, iterations)
+    else:
+        return date_generator_unbounded(interval[0], intervaltimedelta)
 
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
@@ -651,6 +685,26 @@ def _iso_year_start(isoyear):
 
     #Return the start of the year
     return fourth_jan - delta
+
+def date_generator(startdate, timedelta, iterations):
+    currentdate = startdate
+    currentiteration = 0
+
+    while currentiteration < iterations:
+        yield currentdate
+
+        #Update the values
+        currentdate += timedelta
+        currentiteration += 1
+
+def date_generator_unbounded(startdate, timedelta):
+    currentdate = startdate
+
+    while True:
+        yield currentdate
+
+        #Update the value
+        currentdate += timedelta
 
 class UTCOffset(datetime.tzinfo):
     def __init__(self, name, utcdelta):
