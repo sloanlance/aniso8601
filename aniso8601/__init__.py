@@ -163,7 +163,7 @@ def parse_duration(isodurationstr):
     else:
         return parse_duration_combined(isodurationstr)
 
-def parse_interval(isointervalstr, delimiter='/'):
+def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
     #Given a string representing an ISO8601 interval, return a
     #tuple of datetime.date or date.datetime objects representing the beginning
     #an end of the specified interval. Valid formats are:
@@ -182,15 +182,15 @@ def parse_interval(isointervalstr, delimiter='/'):
     #Is expressly not supported as there is no way to provide the addtional
     #required context.
 
-    firstpart, secondpart = isointervalstr.split(delimiter)
+    firstpart, secondpart = isointervalstr.split(intervaldelimiter)
 
     if firstpart[0] == 'P':
         #<duration>/<end>
         #We need to figure out if <end> is a date, or a datetime
-        if secondpart.find('T') != -1:
+        if secondpart.find(datetimedelimiter) != -1:
             #<end> is a datetime
             duration = parse_duration(firstpart)
-            enddatetime = parse_datetime(secondpart)
+            enddatetime = parse_datetime(secondpart, delimiter=datetimedelimiter)
 
             return (enddatetime - duration, enddatetime)
         else:
@@ -202,10 +202,10 @@ def parse_interval(isointervalstr, delimiter='/'):
     elif secondpart[0] == 'P':
         #<start>/<duration>
         #We need to figure out if <start> is a date, or a datetime
-        if firstpart.find('T') != -1:
+        if firstpart.find(datetimedelimiter) != -1:
             #<end> is a datetime
             duration = parse_duration(secondpart)
-            startdatetime = parse_datetime(firstpart)
+            startdatetime = parse_datetime(firstpart, delimiter=datetimedelimiter)
 
             return (startdatetime, startdatetime + duration)
         else:
@@ -216,15 +216,15 @@ def parse_interval(isointervalstr, delimiter='/'):
             return (startdate, startdate + duration)
     else:
         #<start>/<end>
-        if firstpart.find('T') != -1 and secondpart.find('T') != -1:
+        if firstpart.find(datetimedelimiter) != -1 and secondpart.find(datetimedelimiter) != -1:
             #Both parts are datetimes
-            return (parse_datetime(firstpart), parse_datetime(secondpart))
-        elif firstpart.find('T') != -1 and secondpart.find('T') == -1:
+            return (parse_datetime(firstpart, delimiter=datetimedelimiter), parse_datetime(secondpart, delimiter=datetimedelimiter))
+        elif firstpart.find(datetimedelimiter) != -1 and secondpart.find(datetimedelimiter) == -1:
             #First part is a datetime, second part is a date
-            return (parse_datetime(firstpart), parse_date(secondpart))
-        elif firstpart.find('T') == -1 and secondpart.find('T') != -1:
+            return (parse_datetime(firstpart, delimiter=datetimedelimiter), parse_date(secondpart))
+        elif firstpart.find(datetimedelimiter) == -1 and secondpart.find(datetimedelimiter) != -1:
             #First part is a date, second part is a datetime
-            return (parse_date(firstpart), parse_datetime(secondpart))
+            return (parse_date(firstpart), parse_datetime(secondpart, delimiter=datetimedelimiter))
         else:
             #Both parts are dates
             return (parse_date(firstpart), parse_date(secondpart))

@@ -368,6 +368,14 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(resultinterval[0], datetime.date(year=1980, month=3, day=5))
         self.assertEqual(resultinterval[1], datetime.date(year=1981, month=4, day=5))
 
+        resultinterval = aniso8601.parse_interval('1980-03-05T01:01:00--1981-04-05T01:01:00', intervaldelimiter='--')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+
+        resultinterval = aniso8601.parse_interval('1980-03-05 01:01:00/1981-04-05 01:01:00', datetimedelimiter=' ')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+
     def test_parse_year(self):
         date = aniso8601.parse_year('2013')
         self.assertEqual(date.year, 2013)
