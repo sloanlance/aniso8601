@@ -147,21 +147,87 @@ def parse_datetime(isodatetimestr, delimiter='T'):
 
     return datetime.datetime.combine(datepart, timepart)
 
-def parse_duration(durationstr):
+def parse_duration(isodurationstr):
     #Given a string representing an ISO 8601 duration, return a
     #datetime.timedelta that matches the given duration. Valid formts are:
     #
     #PnYnMnDTnHnMnS (or any reduced precision equivalent)
     #P<date>T<time>
 
-    if durationstr[0] != 'P':
+    if isodurationstr[0] != 'P':
         raise ValueError('String is not a valid ISO8601 duration.')
 
     #If Y, M, D, H, or S are in the string, assume it is a specified duration
-    if durationstr.find('Y') != -1 or durationstr.find('M') != -1 or durationstr.find('D') != -1 or durationstr.find('H') != -1 or durationstr.find('S') != -1:
-        return parse_duration_prescribed(durationstr)
+    if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
+        return parse_duration_prescribed(isodurationstr)
     else:
-        return parse_duration_combined(durationstr)
+        return parse_duration_combined(isodurationstr)
+
+def parse_interval(isointervalstr, delimiter='/'):
+    #Given a string representing an ISO8601 interval, return a
+    #tuple of datetime.date or date.datetime objects representing the beginning
+    #an end of the specified interval. Valid formats are:
+    #
+    #<start>/<end>
+    #<start>/<duration>
+    #<duration>/<end>
+    #
+    #The <start> and <end> values can represent dates, or datetimes,
+    #not times.
+    #
+    #The format:
+    #
+    #<duration>
+    #
+    #Is expressly not supported as there is no way to provide the addtional
+    #required context.
+
+    firstpart, secondpart = isointervalstr.split(delimiter)
+
+    if firstpart[0] == 'P':
+        #<duration>/<end>
+        #We need to figure out if <end> is a date, or a datetime
+        if secondpart.find('T') != -1:
+            #<end> is a datetime
+            duration = parse_duration(firstpart)
+            enddatetime = parse_datetime(secondpart)
+
+            return (enddatetime - duration, enddatetime)
+        else:
+            #<end> must just be a date
+            duration = parse_duration(firstpart)
+            enddate = parse_date(secondpart)
+
+            return (enddate - duration, enddate)
+    elif secondpart[0] == 'P':
+        #<start>/<duration>
+        #We need to figure out if <start> is a date, or a datetime
+        if firstpart.find('T') != -1:
+            #<end> is a datetime
+            duration = parse_duration(secondpart)
+            startdatetime = parse_datetime(firstpart)
+
+            return (startdatetime, startdatetime + duration)
+        else:
+            #<start> must just be a date
+            duration = parse_duration(secondpart)
+            startdate = parse_date(firstpart)
+
+            return (startdate, startdate + duration)
+    else:
+        #<start>/<end>
+        if firstpart.find('T') != -1 and secondpart.find('T') != -1:
+            #Both parts are datetimes
+            return (parse_datetime(firstpart), parse_datetime(secondpart))
+        elif firstpart.find('T') != -1 and secondpart.find('T') == -1:
+            #First part is a datetime, second part is a date
+            return (parse_datetime(firstpart), parse_date(secondpart))
+        elif firstpart.find('T') == -1 and secondpart.find('T') != -1:
+            #First part is a date, second part is a datetime
+            return (parse_date(firstpart), parse_datetime(secondpart))
+        else:
+            #Both parts are dates
+            return (parse_date(firstpart), parse_date(secondpart))
 
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]

@@ -335,6 +335,39 @@ class TestParseFunctions(unittest.TestCase):
         self.assertEqual(resultduration.seconds, 45005)
         self.assertEqual(resultduration.microseconds, 500000)
 
+    def test_parse_interval(self):
+        resultinterval = aniso8601.parse_interval('P1M/1981-04-05T01:01:00')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1981, month=3, day=6, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+
+        resultinterval = aniso8601.parse_interval('P1M/1981-04-05')
+        self.assertEqual(resultinterval[0], datetime.date(year=1981, month=3, day=6))
+        self.assertEqual(resultinterval[1], datetime.date(year=1981, month=4, day=5))
+
+        resultinterval = aniso8601.parse_interval('1981-04-05T01:01:00/P1M1DT1M')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=5, day=6, hour=1, minute=2))
+
+        resultinterval = aniso8601.parse_interval('1981-04-05/P1M1D')
+        self.assertEqual(resultinterval[0], datetime.date(year=1981, month=4, day=5))
+        self.assertEqual(resultinterval[1], datetime.date(year=1981, month=5, day=6))
+
+        resultinterval = aniso8601.parse_interval('1980-03-05T01:01:00/1981-04-05T01:01:00')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+
+        resultinterval = aniso8601.parse_interval('1980-03-05T01:01:00/1981-04-05')
+        self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
+        self.assertEqual(resultinterval[1], datetime.date(year=1981, month=4, day=5))
+
+        resultinterval = aniso8601.parse_interval('1980-03-05/1981-04-05T01:01:00')
+        self.assertEqual(resultinterval[0], datetime.date(year=1980, month=3, day=5))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
+
+        resultinterval = aniso8601.parse_interval('1980-03-05/1981-04-05')
+        self.assertEqual(resultinterval[0], datetime.date(year=1980, month=3, day=5))
+        self.assertEqual(resultinterval[1], datetime.date(year=1981, month=4, day=5))
+
     def test_parse_year(self):
         date = aniso8601.parse_year('2013')
         self.assertEqual(date.year, 2013)
