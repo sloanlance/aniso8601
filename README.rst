@@ -143,12 +143,75 @@ Parsing a duration from a combined date and time is supported as well::
   >>> aniso8601.parse_duration('P0001-01-02T01:30:5')
   datetime.timedelta(397, 5405)
 
+Parsing intervals
+-----------------
+
+To parse an interval specified by a start and end::
+
+  >>> import aniso8601
+  >>> aniso8601.parse_interval('2007-03-01T13:00:00/2008-05-11T15:30:00')
+  (datetime.datetime(2007, 3, 1, 13, 0), datetime.datetime(2008, 5, 11, 15, 30))
+
+Intervals specified by a start time and a duration are supported::
+
+  >>> aniso8601.parse_interval('2007-03-01T13:00:00Z/P1Y2M10DT2H30M')
+  (datetime.datetime(2007, 3, 1, 13, 0, tzinfo=<aniso8601.UTCOffset object at 0x7f698d44d110>), datetime.datetime(2008, 5, 9, 15, 30, tzinfo=<aniso8601.UTCOffset object at 0x7f698d44d110>))
+
+A duration can also be specified by a duration and end time::
+
+  >>> aniso8601.parse_interval('P1M/1981-04-05')
+  (datetime.date(1981, 4, 5), datetime.date(1981, 3, 6))
+
+Notice that the result of the above parse is not in order from earliest to latest. If sorted intervals are required, simply use the 'sorted' keyword as shown below::
+
+  >>> sorted(aniso8601.parse_interval('P1M/1981-04-05'))
+  [datetime.date(1981, 3, 6), datetime.date(1981, 4, 5)]
+
+Repeating intervals are supported as well, and return a generator::
+
+  >>> aniso8601.parse_repeating_interval('R3/1981-04-05/P1D')
+  <generator object date_generator at 0x7f698cdefc80>
+  >>> list(aniso8601.parse_repeating_interval('R3/1981-04-05/P1D'))
+  [datetime.date(1981, 4, 5), datetime.date(1981, 4, 6), datetime.date(1981, 4, 7)]
+
+Repeating intervals are allowed to go in the reverse direction::
+
+  >>> list(aniso8601.parse_repeating_interval('R2/PT1H2M/1980-03-05T01:01:00'))
+  [datetime.datetime(1980, 3, 5, 1, 1), datetime.datetime(1980, 3, 4, 23, 59)]
+
+Unbounded intervals are also allowed::
+
+  >>> result = aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00')
+  >>> result.next()
+  datetime.datetime(1980, 3, 5, 1, 1)
+  >>> result.next()
+  datetime.datetime(1980, 3, 4, 23, 59)
+
+Note that you should never try to convert a generator produced by an unbounded interval to a list::
+
+  >>> list(aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00'))
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "aniso8601/__init__.py", line 707, in date_generator_unbounded
+      currentdate += timedelta
+  OverflowError: date value out of range
+
 Tests
 =====
 
 To run the unit tests::
 
    $ python -m unittest aniso8601.test_aniso8601
+
+Contributing
+============
+
+aniso8601 is an open source project hosted on `Bitbucket <https://bitbucket.org/nielsenb/aniso8601>`_.
+
+Any and all bugs are welcome on our `issue tracker <https://bitbucket.org/nielsenb/aniso8601/issues>`_.
+Of particular interest are valid ISO 8601 strings that don't parse, or invalid ones that do. At a minimum,
+bug reports should include an example of the misbehaving string, as well as the expected result. Of course
+patches containing unit tests (or fixed bugs) are welcome!
 
 References
 ==========
