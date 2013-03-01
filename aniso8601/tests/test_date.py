@@ -16,7 +16,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
-import datetime
 
 from aniso8601.date import parse_date, parse_year, parse_calendar_date, parse_week_date, parse_ordinal_date
 
