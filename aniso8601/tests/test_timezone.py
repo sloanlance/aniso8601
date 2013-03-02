@@ -17,8 +17,9 @@
 
 import unittest
 import datetime
+import pickle
 
-from aniso8601.timezone import parse_timezone
+from aniso8601.timezone import parse_timezone, build_utcoffset
 
 class TestTimezoneFunctions(unittest.TestCase):
     def test_parse_timezone(self):
@@ -98,3 +99,14 @@ class TestTimezoneFunctions(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             parse_timezone('-00')
+
+    def test_pickle(self):
+        #Make sure timezone objects are pickleable
+        testutcoffset = build_utcoffset('UTC', datetime.timedelta(0))
+
+        utcoffsetpickle = pickle.dumps(testutcoffset)
+
+        resultutcoffset = pickle.loads(utcoffsetpickle)
+
+        self.assertEqual(resultutcoffset._name, testutcoffset._name)
+        self.assertEqual(resultutcoffset._utcdelta, testutcoffset._utcdelta)

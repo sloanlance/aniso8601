@@ -17,7 +17,7 @@
 
 import datetime
 
-from timezone import parse_timezone, UTCOffset
+from timezone import parse_timezone, build_utcoffset
 from date import parse_date
 
 def parse_time(isotimestr):
@@ -68,7 +68,7 @@ def parse_time(isotimestr):
     if tzstr == None:
         return parse_time_naive(timestr)
     elif tzstr == 'Z':
-        return parse_time_naive(timestr).replace(tzinfo=UTCOffset('UTC', datetime.timedelta(hours=0)))
+        return parse_time_naive(timestr).replace(tzinfo=build_utcoffset('UTC', datetime.timedelta(hours=0)))
     else:
         return parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
 
