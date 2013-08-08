@@ -3,3 +3,7 @@
 *.pyc
 build/
 dist/
+
+#  Documentation  #
+###################
+docs/_build
