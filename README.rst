@@ -9,6 +9,7 @@ Another ISO 8601 parser for Python
 Features
 ========
 * Pure Python implementation
+* Python 3 support
 * No extra dependencies
 * Logical behavior
 
@@ -179,12 +180,20 @@ Repeating intervals are allowed to go in the reverse direction::
   >>> list(aniso8601.parse_repeating_interval('R2/PT1H2M/1980-03-05T01:01:00'))
   [datetime.datetime(1980, 3, 5, 1, 1), datetime.datetime(1980, 3, 4, 23, 59)]
 
-Unbounded intervals are also allowed::
+Unbounded intervals are also allowed (Python 2)::
 
   >>> result = aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00')
   >>> result.next()
   datetime.datetime(1980, 3, 5, 1, 1)
   >>> result.next()
+  datetime.datetime(1980, 3, 4, 23, 59)
+
+or for Python 3::
+
+  >>> result = aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00')
+  >>> next(result)
+  datetime.datetime(1980, 3, 5, 1, 1)
+  >>> next(result)
   datetime.datetime(1980, 3, 4, 23, 59)
 
 Note that you should never try to convert a generator produced by an unbounded interval to a list::
@@ -199,7 +208,7 @@ Note that you should never try to convert a generator produced by an unbounded i
 Tests
 =====
 
-To run the unit tests::
+To run the unit tests, in your source checkout, navigate to the source directory for the Python version being worked on (python2, python3) and type::
 
    $ python -m unittest discover aniso8601/tests/
 

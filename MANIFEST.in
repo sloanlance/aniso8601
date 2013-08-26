@@ -1,2 +1,4 @@
 include COPYING
 include README.rst
+recursive-include python2 *
+recursive-include python3 *
