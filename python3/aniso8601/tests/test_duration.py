@@ -44,6 +44,12 @@ class TestDurationFunctions(unittest.TestCase):
         resultduration = parse_duration('P1M')
         self.assertEqual(resultduration.days, 30)
 
+        resultduration = parse_duration('P1W')
+        self.assertEqual(resultduration.days, 7)
+
+        resultduration = parse_duration('P1D')
+        self.assertEqual(resultduration.days, 1)
+
         resultduration = parse_duration('P0003-06-04T12:30:05')
         self.assertEqual(resultduration.days, 1279)
         self.assertEqual(resultduration.seconds, 45005)
@@ -83,6 +89,12 @@ class TestDurationFunctions(unittest.TestCase):
 
         resultduration = parse_duration_prescribed('P1M')
         self.assertEqual(resultduration.days, 30)
+
+        resultduration = parse_duration_prescribed('P1W')
+        self.assertEqual(resultduration.days, 7)
+
+        resultduration = parse_duration_prescribed('P1D')
+        self.assertEqual(resultduration.days, 1)
 
     def test_parse_duration_combined(self):
         resultduration = parse_duration_combined('P0003-06-04T12:30:05')

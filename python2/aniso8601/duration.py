@@ -31,7 +31,7 @@ def parse_duration(isodurationstr):
         raise ValueError('String is not a valid ISO8601 duration.')
 
     #If Y, M, D, H, or S are in the string, assume it is a specified duration
-    if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
+    if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('W') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
         return parse_duration_prescribed(isodurationstr)
     else:
         return parse_duration_combined(isodurationstr)
@@ -66,6 +66,11 @@ def parse_duration_prescribed(durationstr):
         else:
             months = 0
 
+        if durationstr.find('W') != -1:
+            weeks = _parse_duration_element(durationstr, 'W')
+        else:
+            weeks = 0
+
         if durationstr.find('D') != -1:
             days = _parse_duration_element(durationstr, 'D')
         else:
@@ -89,6 +94,11 @@ def parse_duration_prescribed(durationstr):
         else:
             months = 0
 
+        if durationstr.find('W') != -1:
+            weeks = _parse_duration_element(durationstr, 'W')
+        else:
+            weeks = 0
+
         if firsthalf.find('D') != -1:
             days = _parse_duration_element(firsthalf, 'D')
         else:
@@ -109,7 +119,7 @@ def parse_duration_prescribed(durationstr):
         else:
             seconds = 0
 
-    totaldays = years * 365 + months * 30 + days
+    totaldays = years * 365 + months * 30 + weeks * 7 + days
 
     return datetime.timedelta(days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
 
