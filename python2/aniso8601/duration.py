@@ -119,9 +119,10 @@ def parse_duration_prescribed(durationstr):
         else:
             seconds = 0
 
-    totaldays = years * 365 + months * 30 + weeks * 7 + days
+    #Note that weeks can be handled without conversion to days
+    totaldays = years * 365 + months * 30 + days
 
-    return datetime.timedelta(days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
+    return datetime.timedelta(weeks=weeks, days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
 
 def parse_duration_combined(durationstr):
     #Period of the form P<date>T<time>
