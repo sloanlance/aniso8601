@@ -37,7 +37,7 @@ def parse_duration(isodurationstr):
         return parse_duration_combined(isodurationstr)
 
 def parse_duration_prescribed(durationstr):
-    #durationstr can be of the form PnYnMnDTnHnMnS
+    #durationstr can be of the form PnYnMnDTnHnMnS or PnW
 
     #Make sure only the lowest order element has decimal precision
     if durationstr.count('.') > 1:
