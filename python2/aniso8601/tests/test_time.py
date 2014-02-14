@@ -178,6 +178,15 @@ class TestTimeFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), 'UTC')
 
+        time = parse_time('06:14:00.000123Z')
+        self.assertEqual(time.hour, 6)
+        self.assertEqual(time.minute, 14)
+        self.assertEqual(time.second, 00)
+        self.assertEqual(time.microsecond, 123)
+        tzinfoobject = time.tzinfo
+        self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
+        self.assertEqual(tzinfoobject.tzname(None), 'UTC')
+
     def test_parse_datetime(self):
         resultdatetime = parse_datetime('1981-04-05T23:21:28.512400Z')
         self.assertEqual(resultdatetime.year, 1981)
