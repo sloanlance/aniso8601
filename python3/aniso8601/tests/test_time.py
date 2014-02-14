@@ -76,6 +76,10 @@ class TestTimeFunctions(unittest.TestCase):
         time = parse_time('24')
         self.assertEqual(time.hour, 0)
 
+        time = parse_time('12.5')
+        self.assertEqual(time.hour, 12)
+        self.assertEqual(time.minute, 30)
+
         time = parse_time('232128.512400+00:00')
         self.assertEqual(time.hour, 23)
         self.assertEqual(time.minute, 21)
