@@ -139,6 +139,11 @@ A decimal fraction is allowed on the lowest order element::
   >>> aniso8601.parse_duration('P1YT3.5M')
   datetime.timedelta(365, 210)
 
+The decimal fraction can be specified with a comma instead of a full-stop::
+
+  >>> aniso8601.parse_duration('P1YT3,5M')
+  datetime.timedelta(365, 210
+
 Parsing a duration from a combined date and time is supported as well::
 
   >>> aniso8601.parse_duration('P0001-01-02T01:30:5')
