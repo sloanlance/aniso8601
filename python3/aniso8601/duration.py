@@ -157,4 +157,8 @@ def _parse_duration_element(durationstr, elementstr):
 
     durationstartindex += 1
 
+    if ',' in durationstr:
+        #Replace the comma with a 'full-stop'
+        durationstr = durationstr.replace(',', '.')
+
     return float(durationstr[durationstartindex:durationendindex])

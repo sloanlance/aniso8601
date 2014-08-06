@@ -30,10 +30,28 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.seconds, 17646)
         self.assertEqual(resultduration.microseconds, 500000)
 
+        resultduration = parse_duration('P1Y2M3DT4H54M6,5S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
         resultduration = parse_duration('P1Y2M3D')
         self.assertEqual(resultduration.days, 428)
 
+        resultduration = parse_duration('P1Y2M3.5D')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration('P1Y2M3,5D')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration('PT4H54M6.5S')
+        self.assertEqual(resultduration.days, 0)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = parse_duration('PT4H54M6,5S')
         self.assertEqual(resultduration.days, 0)
         self.assertEqual(resultduration.seconds, 17646)
         self.assertEqual(resultduration.microseconds, 500000)
@@ -41,14 +59,44 @@ class TestDurationFunctions(unittest.TestCase):
         resultduration = parse_duration('P1Y')
         self.assertEqual(resultduration.days, 365)
 
+        resultduration = parse_duration('P1.5Y')
+        self.assertEqual(resultduration.days, 547)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration('P1,5Y')
+        self.assertEqual(resultduration.days, 547)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration('P1M')
         self.assertEqual(resultduration.days, 30)
+
+        resultduration = parse_duration('P1.5M')
+        self.assertEqual(resultduration.days, 45)
+
+        resultduration = parse_duration('P1,5M')
+        self.assertEqual(resultduration.days, 45)
 
         resultduration = parse_duration('P1W')
         self.assertEqual(resultduration.days, 7)
 
+        resultduration = parse_duration('P1.5W')
+        self.assertEqual(resultduration.days, 10)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration('P1,5W')
+        self.assertEqual(resultduration.days, 10)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration('P1D')
         self.assertEqual(resultduration.days, 1)
+
+        resultduration = parse_duration('P1.5D')
+        self.assertEqual(resultduration.days, 1)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration('P1,5D')
+        self.assertEqual(resultduration.days, 1)
+        self.assertEqual(resultduration.seconds, 43200)
 
         resultduration = parse_duration('P0003-06-04T12:30:05')
         self.assertEqual(resultduration.days, 1279)
@@ -59,6 +107,9 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.days, 1279)
         self.assertEqual(resultduration.seconds, 45005)
         self.assertEqual(resultduration.microseconds, 500000)
+
+        #Verify overflows
+        self.assertEqual(parse_duration('PT36H'), parse_duration('P1DT12H'))
 
     def test_parse_duration_prescribed(self):
         with self.assertRaises(ValueError):
@@ -76,10 +127,28 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.seconds, 17646)
         self.assertEqual(resultduration.microseconds, 500000)
 
+        resultduration = parse_duration_prescribed('P1Y2M3DT4H54M6,5S')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
         resultduration = parse_duration_prescribed('P1Y2M3D')
         self.assertEqual(resultduration.days, 428)
 
+        resultduration = parse_duration_prescribed('P1Y2M3.5D')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration_prescribed('P1Y2M3,5D')
+        self.assertEqual(resultduration.days, 428)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration_prescribed('PT4H54M6.5S')
+        self.assertEqual(resultduration.days, 0)
+        self.assertEqual(resultduration.seconds, 17646)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+        resultduration = parse_duration_prescribed('PT4H54M6,5S')
         self.assertEqual(resultduration.days, 0)
         self.assertEqual(resultduration.seconds, 17646)
         self.assertEqual(resultduration.microseconds, 500000)
@@ -87,14 +156,47 @@ class TestDurationFunctions(unittest.TestCase):
         resultduration = parse_duration_prescribed('P1Y')
         self.assertEqual(resultduration.days, 365)
 
+        resultduration = parse_duration_prescribed('P1.5Y')
+        self.assertEqual(resultduration.days, 547)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration_prescribed('P1,5Y')
+        self.assertEqual(resultduration.days, 547)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration_prescribed('P1M')
         self.assertEqual(resultduration.days, 30)
+
+        resultduration = parse_duration_prescribed('P1.5M')
+        self.assertEqual(resultduration.days, 45)
+
+        resultduration = parse_duration_prescribed('P1,5M')
+        self.assertEqual(resultduration.days, 45)
 
         resultduration = parse_duration_prescribed('P1W')
         self.assertEqual(resultduration.days, 7)
 
+        resultduration = parse_duration_prescribed('P1.5W')
+        self.assertEqual(resultduration.days, 10)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration_prescribed('P1,5W')
+        self.assertEqual(resultduration.days, 10)
+        self.assertEqual(resultduration.seconds, 43200)
+
         resultduration = parse_duration_prescribed('P1D')
         self.assertEqual(resultduration.days, 1)
+
+        resultduration = parse_duration_prescribed('P1.5D')
+        self.assertEqual(resultduration.days, 1)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        resultduration = parse_duration_prescribed('P1,5D')
+        self.assertEqual(resultduration.days, 1)
+        self.assertEqual(resultduration.seconds, 43200)
+
+        #Verify overflows
+        self.assertEqual(parse_duration('PT36H'), parse_duration('P1DT12H'))
 
     def test_parse_duration_combined(self):
         resultduration = parse_duration_combined('P0003-06-04T12:30:05')
@@ -114,3 +216,6 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'H'), 4)
         self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'M'), 5)
         self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'S'), 6.1234)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'H'), 4)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'M'), 54)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'S'), 6.5)
