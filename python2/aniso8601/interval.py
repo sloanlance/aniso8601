@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from duration import parse_duration
 from time import parse_datetime
 from date import parse_date
@@ -59,7 +60,11 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
             duration = parse_duration(firstpart)
             enddate = parse_date(secondpart)
 
-            return (enddate, enddate - duration)
+            #See if we need to upconvert to datetime to preserve resolution
+            if firstpart.find(datetimedelimiter) != -1:
+                return (enddate, datetime.combine(enddate, datetime.min.time()) - duration)
+            else:
+                return (enddate, enddate - duration)
     elif secondpart[0] == 'P':
         #<start>/<duration>
         #We need to figure out if <start> is a date, or a datetime
@@ -74,7 +79,11 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
             duration = parse_duration(secondpart)
             startdate = parse_date(firstpart)
 
-            return (startdate, startdate + duration)
+            #See if we need to upconvert to datetime to preserve resolution
+            if secondpart.find(datetimedelimiter) != -1:
+                return (startdate, datetime.combine(startdate, datetime.min.time()) + duration)
+            else:
+                return (startdate, startdate + duration)
     else:
         #<start>/<end>
         if firstpart.find(datetimedelimiter) != -1 and secondpart.find(datetimedelimiter) != -1:
