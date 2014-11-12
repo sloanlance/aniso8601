@@ -44,7 +44,7 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
         #<duration>/<end>
         #Notice that these are not returned 'in order' (earlier to later), this
         #is to maintain consistency with parsing <start>/<end> durations, as
-        #well asmaking repeating interval code cleaner. Users who desire
+        #well as making repeating interval code cleaner. Users who desire
         #durations to be in order can use the 'sorted' operator.
 
         #We need to figure out if <end> is a date, or a datetime
