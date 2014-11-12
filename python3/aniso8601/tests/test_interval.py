@@ -30,6 +30,14 @@ class TestIntervalFunctions(unittest.TestCase):
         self.assertEqual(resultinterval[0], datetime.date(year=1981, month=4, day=5))
         self.assertEqual(resultinterval[1], datetime.date(year=1981, month=3, day=6))
 
+        resultinterval = parse_interval('PT1H/2014-11-12')
+        self.assertEqual(resultinterval[0], datetime.date(year=2014, month=11, day=12))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=2014, month=11, day=11, hour=23))
+
+        resultinterval = parse_interval('PT4H54M6.5S/2014-11-12')
+        self.assertEqual(resultinterval[0], datetime.date(year=2014, month=11, day=12))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=2014, month=11, day=11, hour=19, minute=5, second=53, microsecond=500000))
+
         resultinterval = parse_interval('1981-04-05T01:01:00/P1M1DT1M')
         self.assertEqual(resultinterval[0], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=5, day=6, hour=1, minute=2))
@@ -37,6 +45,14 @@ class TestIntervalFunctions(unittest.TestCase):
         resultinterval = parse_interval('1981-04-05/P1M1D')
         self.assertEqual(resultinterval[0], datetime.date(year=1981, month=4, day=5))
         self.assertEqual(resultinterval[1], datetime.date(year=1981, month=5, day=6))
+
+        resultinterval = parse_interval('2014-11-12/PT1H')
+        self.assertEqual(resultinterval[0], datetime.date(year=2014, month=11, day=12))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=2014, month=11, day=12, hour=1, minute=0))
+
+        resultinterval = parse_interval('2014-11-12/PT4H54M6.5S')
+        self.assertEqual(resultinterval[0], datetime.date(year=2014, month=11, day=12))
+        self.assertEqual(resultinterval[1], datetime.datetime(year=2014, month=11, day=12, hour=4, minute=54, second=6, microsecond=500000))
 
         resultinterval = parse_interval('1980-03-05T01:01:00/1981-04-05T01:01:00')
         self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))

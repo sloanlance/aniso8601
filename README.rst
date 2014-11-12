@@ -173,6 +173,11 @@ Notice that the result of the above parse is not in order from earliest to lates
   >>> sorted(aniso8601.parse_interval('P1M/1981-04-05'))
   [datetime.date(1981, 3, 6), datetime.date(1981, 4, 5)]
 
+The end of an interval is given as a datetime when required to maintain the resolution specified by a duration, even if the duration start is given as a date::
+
+  >>> aniso8601.parse_interval('2014-11-12/PT4H54M6.5S')
+  (datetime.date(2014, 11, 12), datetime.datetime(2014, 11, 12, 4, 54, 6, 500000))
+
 Repeating intervals are supported as well, and return a generator::
 
   >>> aniso8601.parse_repeating_interval('R3/1981-04-05/P1D')
@@ -206,7 +211,7 @@ Note that you should never try to convert a generator produced by an unbounded i
   >>> list(aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00'))
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "aniso8601/__init__.py", line 707, in date_generator_unbounded
+    File "aniso8601/__init__.py", line 149, in date_generator_unbounded
       currentdate += timedelta
   OverflowError: date value out of range
 
