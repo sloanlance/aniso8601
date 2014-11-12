@@ -10,7 +10,7 @@
 %global tarball_name aniso8601
 
 Name:           python-aniso8601
-Version:        0.84
+Version:        0.90dev
 Release:        1%{?dist}
 Summary:        A Python library for parsing ISO 8601 strings
 
