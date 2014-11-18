@@ -17,7 +17,7 @@ Release:        2%{?dist}
 Summary:        Python 2 library for parsing ISO 8601 strings
 
 Group:          Development/Languages
-License:        GPLv3+
+License:        BSD
 URL:            https://bitbucket.org/nielsenb/aniso8601
 Source0:        https://pypi.python.org/packages/source/a/aniso8601/%{tarball_name}-%{version}.tar.gz
 
