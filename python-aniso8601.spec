@@ -12,8 +12,8 @@
 %global tarball_name aniso8601
 
 Name:           python-aniso8601
-Version:        0.82
-Release:        2%{?dist}
+Version:        0.85
+Release:        1%{?dist}
 Summary:        Python 2 library for parsing ISO 8601 strings
 
 Group:          Development/Languages
@@ -75,17 +75,20 @@ PYTHONPATH=%{buildroot}/%{python3_sitelib} %{__python3} -m unittest discover pyt
 %endif
 
 %files
-%doc COPYING README.rst
+%doc LICENSE README.rst
 %{python2_sitelib}/*
 
 %if 0%{?with_python3}
 %files -n python3-aniso8601
-%doc COPYING README.rst
+%doc LICENSE README.rst
 %{python3_sitelib}/*
 
 %endif
 
 %changelog
+* Tue Nov 18 2014 Jan Sedlak <jsedlak@redhat.com> - 0.85-1
+- change license to BSD, new version
+
 * Thu May 22 2014 Jan Sedlak <jsedlak@redhat.com> - 0.82-2
 - disabled tests for EL6
 
