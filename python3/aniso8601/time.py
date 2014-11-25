@@ -10,6 +10,73 @@ import datetime
 
 from .timezone import parse_timezone, build_utcoffset
 from .date import parse_date
+from .resolution import TimeResolution
+
+def get_resolution(isotimestr):
+    #Valid time formats are:
+    #
+    #hh:mm:ss
+    #hhmmss
+    #hh:mm
+    #hhmm
+    #hh
+    #hh:mm:ssZ
+    #hhmmssZ
+    #hh:mmZ
+    #hhmmZ
+    #hhZ
+    #hh:mm:ss±hh:mm
+    #hhmmss±hh:mm
+    #hh:mm±hh:mm
+    #hhmm±hh:mm
+    #hh±hh:mm
+    #hh:mm:ss±hhmm
+    #hhmmss±hhmm
+    #hh:mm±hhmm
+    #hhmm±hhmm
+    #hh±hhmm
+    #hh:mm:ss±hh
+    #hhmmss±hh
+    #hh:mm±hh
+    #hhmm±hh
+    #hh±hh
+
+    #Split the string at the TZ, if necessary
+    if isotimestr.find('+') != -1:
+        timestr = isotimestr[0:isotimestr.find('+')]
+    elif isotimestr.find('-') != -1:
+        timestr = isotimestr[0:isotimestr.find('-')]
+    elif isotimestr.endswith('Z'):
+        timestr = isotimestr[:-1]
+    else:
+        timestr = isotimestr
+
+    if timestr.count(':') == 2:
+        #hh:mm:ss
+        return TimeResolution.Seconds
+    elif timestr.count(':') == 1:
+        #hh:mm
+        return TimeResolution.Minutes
+
+    #Format must be hhmmss, hhmm, or hh
+    if timestr.find('.') == -1:
+        #No time fractions
+        timestrlen = len(timestr)
+    else:
+        #The lowest order element is a fraction
+        timestrlen = len(timestr.split('.')[0])
+
+    if timestrlen == 6:
+        #hhmmss
+        return TimeResolution.Seconds
+    elif timestrlen == 4:
+        #hhmm
+        return TimeResolution.Minutes
+    elif timestrlen == 2:
+        #hh
+        return TimeResolution.Hours
+    else:
+        raise ValueError('String is not a valid ISO8601 time.')
 
 def parse_time(isotimestr):
     #Given a string in any ISO8601 time format, return a datetime.time object

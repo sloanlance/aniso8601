@@ -8,6 +8,79 @@
 
 import datetime
 
+from .resolution import DateResolution
+
+def get_resolution(isodatestr):
+    #Valid string formats are:
+    #
+    #Y[YYY]
+    #YYYY-MM-DD
+    #YYYYMMDD
+    #YYYY-MM
+    #YYYY-Www
+    #YYYYWww
+    #YYYY-Www-D
+    #YYYYWwwD
+    #YYYY-DDD
+    #YYYYDDD
+    if isodatestr.startswith('+') or isodatestr.startswith('-'):
+        raise NotImplementedError('ISO8601 extended year representation not supported.')
+    isodatestrlen = len(isodatestr)
+
+    if isodatestr.find('W') != -1:
+        #Handle ISO8601 week date format
+        hyphens_present = 1 if isodatestr.find('-') != -1 else 0
+        week_date_len = 7 + hyphens_present
+        weekday_date_len = 8 + 2*hyphens_present
+        if isodatestrlen == week_date_len:
+            #YYYY-Www
+            #YYYYWww
+            return DateResolution.Week
+        elif isodatestrlen == weekday_date_len:
+            #YYYY-Www-D
+            #YYYYWwwD
+            return DateResolution.Weekday
+        else:
+            raise ValueError('String is not a valid ISO8601 week date.')
+
+    #If the size of the string of 4 or less, assume its a truncated year representation
+    if len(isodatestr) <= 4:
+        return DateResolution.Year
+
+    #An ISO string may be a calendar represntation if:
+    # 1) When split on a hyphen, the sizes of the parts are 4, 2, 2 or 4, 2
+    # 2) There are no hyphens, and the length is 8
+    datestrsplit = isodatestr.split('-')
+
+    #Check case 1
+    if len(datestrsplit) == 2:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 2:
+            return DateResolution.Month
+
+    if len(datestrsplit) == 3:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 2 and len(datestrsplit[2]) == 2:
+            return DateResolution.Day
+
+    #Check case 2
+    if len(isodatestr) == 8 and isodatestr.find('-') == -1:
+        return DateResolution.Day
+
+    #An ISO string may be a ordinal date representation if:
+    # 1) When split on a hyphen, the sizes of the parts are 4, 3
+    # 2) There are no hyphens, and the length is 7
+
+    #Check case 1
+    if len(datestrsplit) == 2:
+        if len(datestrsplit[0]) == 4 and len(datestrsplit[1]) == 3:
+            return DateResolution.Ordinal
+
+    #Check case 2
+    if len(isodatestr) == 7 and isodatestr.find('-') == -1:
+        return DateResolution.Ordinal
+
+    #None of the date representations match
+    raise ValueError('String is not an ISO8601 date, perhaps it represents a time or datetime.')
+
 def parse_date(isodatestr):
     #Given a string in any ISO8601 date format, return a datetime.date
     #object that corresponds to the given date. Valid string formats are:
@@ -193,4 +266,3 @@ def _iso_year_start(isoyear):
 
     #Return the start of the year
     return fourth_jan - delta
-
