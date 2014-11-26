@@ -12,7 +12,7 @@ from timezone import parse_timezone, build_utcoffset
 from date import parse_date
 from resolution import TimeResolution
 
-def get_resolution(isotimestr):
+def get_time_resolution(isotimestr):
     #Valid time formats are:
     #
     #hh:mm:ss
@@ -133,7 +133,7 @@ def parse_time_naive(timestr):
     #mm is between 0 and 60, with 60 used to denote a leap second
     #
     #No tzinfo will be included
-    return resolution_map[get_resolution(timestr)](timestr)
+    return resolution_map[get_time_resolution(timestr)](timestr)
 
 def parse_hour(timestr):
     #Format must be hh or hh.

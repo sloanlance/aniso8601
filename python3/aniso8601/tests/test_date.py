@@ -8,24 +8,24 @@
 
 import unittest
 
-from aniso8601.date import parse_date, parse_year, parse_calendar_day, parse_calendar_month, parse_week_day, parse_week, parse_ordinal_date, get_resolution
+from aniso8601.date import parse_date, parse_year, parse_calendar_day, parse_calendar_month, parse_week_day, parse_week, parse_ordinal_date, get_date_resolution
 from aniso8601.resolution import DateResolution
 
 class TestDateFunctions(unittest.TestCase):
-    def test_get_resolution(self):
-        self.assertEqual(get_resolution('2013'), DateResolution.Year)
-        self.assertEqual(get_resolution('0001'), DateResolution.Year)
-        self.assertEqual(get_resolution('19'), DateResolution.Year)
-        self.assertEqual(get_resolution('1981-04-05'), DateResolution.Day)
-        self.assertEqual(get_resolution('19810405'), DateResolution.Day)
-        self.assertEqual(get_resolution('1981-04'), DateResolution.Month)
-        self.assertEqual(get_resolution('2004-W53'), DateResolution.Week)
-        self.assertEqual(get_resolution('2009-W01'), DateResolution.Week)
-        self.assertEqual(get_resolution('2004-W53-6'), DateResolution.Weekday)
-        self.assertEqual(get_resolution('2004W53'), DateResolution.Week)
-        self.assertEqual(get_resolution('2004W536'), DateResolution.Weekday)
-        self.assertEqual(get_resolution('1981-095'), DateResolution.Ordinal)
-        self.assertEqual(get_resolution('1981095'), DateResolution.Ordinal)
+    def test_get_date_resolution(self):
+        self.assertEqual(get_date_resolution('2013'), DateResolution.Year)
+        self.assertEqual(get_date_resolution('0001'), DateResolution.Year)
+        self.assertEqual(get_date_resolution('19'), DateResolution.Year)
+        self.assertEqual(get_date_resolution('1981-04-05'), DateResolution.Day)
+        self.assertEqual(get_date_resolution('19810405'), DateResolution.Day)
+        self.assertEqual(get_date_resolution('1981-04'), DateResolution.Month)
+        self.assertEqual(get_date_resolution('2004-W53'), DateResolution.Week)
+        self.assertEqual(get_date_resolution('2009-W01'), DateResolution.Week)
+        self.assertEqual(get_date_resolution('2004-W53-6'), DateResolution.Weekday)
+        self.assertEqual(get_date_resolution('2004W53'), DateResolution.Week)
+        self.assertEqual(get_date_resolution('2004W536'), DateResolution.Weekday)
+        self.assertEqual(get_date_resolution('1981-095'), DateResolution.Ordinal)
+        self.assertEqual(get_date_resolution('1981095'), DateResolution.Ordinal)
 
     def test_parse_date(self):
         date = parse_date('2013')

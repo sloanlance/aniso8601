@@ -10,7 +10,7 @@ import datetime
 
 from .resolution import DateResolution
 
-def get_resolution(isodatestr):
+def get_date_resolution(isodatestr):
     #Valid string formats are:
     #
     #Y[YYY]
@@ -97,7 +97,7 @@ def parse_date(isodatestr):
     #YYYYDDD
     #
     #Note that the ISO8601 date format of ±YYYYY is expressly not supported
-    return resolution_map[get_resolution(isodatestr)](isodatestr)
+    return resolution_map[get_date_resolution(isodatestr)](isodatestr)
 
 def parse_year(yearstr):
     #yearstr is of the format Y[YYY]
