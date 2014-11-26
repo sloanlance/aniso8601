@@ -10,6 +10,65 @@ import datetime
 
 from timezone import parse_timezone, build_utcoffset
 from date import parse_date
+from resolution import TimeResolution
+
+def get_time_resolution(isotimestr):
+    #Valid time formats are:
+    #
+    #hh:mm:ss
+    #hhmmss
+    #hh:mm
+    #hhmm
+    #hh
+    #hh:mm:ssZ
+    #hhmmssZ
+    #hh:mmZ
+    #hhmmZ
+    #hhZ
+    #hh:mm:ss±hh:mm
+    #hhmmss±hh:mm
+    #hh:mm±hh:mm
+    #hhmm±hh:mm
+    #hh±hh:mm
+    #hh:mm:ss±hhmm
+    #hhmmss±hhmm
+    #hh:mm±hhmm
+    #hhmm±hhmm
+    #hh±hhmm
+    #hh:mm:ss±hh
+    #hhmmss±hh
+    #hh:mm±hh
+    #hhmm±hh
+    #hh±hh
+
+    timestr = split_tz(isotimestr)[0]
+
+    if timestr.count(':') == 2:
+        #hh:mm:ss
+        return TimeResolution.Seconds
+    elif timestr.count(':') == 1:
+        #hh:mm
+        return TimeResolution.Minutes
+
+    #Format must be hhmmss, hhmm, or hh
+    if timestr.find('.') == -1:
+        #No time fractions
+        timestrlen = len(timestr)
+    else:
+        #The lowest order element is a fraction
+        timestrlen = len(timestr.split('.')[0])
+
+    if timestrlen == 6:
+        #hhmmss
+        return TimeResolution.Seconds
+    elif timestrlen == 4:
+        #hhmm
+        return TimeResolution.Minutes
+    elif timestrlen == 2:
+        #hh
+        return TimeResolution.Hours
+    else:
+        raise ValueError('String is not a valid ISO8601 time.')
 
 def parse_time(isotimestr):
     #Given a string in any ISO8601 time format, return a datetime.time object
@@ -42,19 +101,7 @@ def parse_time(isotimestr):
     #hhmm±hh
     #hh±hh
 
-    #Split the string at the TZ, if necessary
-    if isotimestr.find('+') != -1:
-        timestr = isotimestr[0:isotimestr.find('+')]
-        tzstr = isotimestr[isotimestr.find('+'):]
-    elif isotimestr.find('-') != -1:
-        timestr = isotimestr[0:isotimestr.find('-')]
-        tzstr = isotimestr[isotimestr.find('-'):]
-    elif isotimestr.endswith('Z'):
-        timestr = isotimestr[:-1]
-        tzstr = 'Z'
-    else:
-        timestr = isotimestr
-        tzstr = None
+    (timestr, tzstr) = split_tz(isotimestr)
 
     if tzstr == None:
         return parse_time_naive(timestr)
@@ -86,139 +133,99 @@ def parse_time_naive(timestr):
     #mm is between 0 and 60, with 60 used to denote a leap second
     #
     #No tzinfo will be included
+    return resolution_map[get_time_resolution(timestr)](timestr)
 
+def parse_hour(timestr):
+    #Format must be hh or hh.
+    isohour = float(timestr)
+
+    if isohour == 24:
+        return datetime.time(hour=0, minute=0)
+
+    #Since the time constructor doesn't handle fractional hours, we put
+    #the hours in to a timedelta, and add it to the time before returning
+    hoursdelta = datetime.timedelta(hours=isohour)
+
+    return build_time(datetime.time(hour=0), hoursdelta)
+
+def parse_minute_time(timestr):
+    #Format must be hhmm, hhmm., hh:mm or hh:mm.
+    if timestr.count(':') == 1:
+        #hh:mm or hh:mm.
+        timestrarray = timestr.split(':')
+
+        isohour = int(timestrarray[0])
+        isominute = float(timestrarray[1])  #Minute may now be a fraction
+    else:
+        #hhmm or hhmm.
+        isohour = int(timestr[0:2])
+        isominute = float(timestr[2:])
+
+    if isominute > 60:
+        raise ValueError('String is not a valid ISO8601 time.')
+
+    if isohour == 24:
+        return datetime.time(hour=0, minute=0)
+
+    #Since the time constructor doesn't handle fractional minutes, we put
+    #the minutes in to a timedelta, and add it to the time before returning
+    minutesdelta = datetime.timedelta(minutes = isominute)
+
+    return build_time(datetime.time(hour=isohour), minutesdelta)
+
+def parse_second_time(timestr):
+    #Format must be hhmmss, hhmmss., hh:mm:ss or hh:mm:ss.
     if timestr.count(':') == 2:
-        #hh:mm:ss
+        #hh:mm:ss or hh:mm:ss.
         timestrarray = timestr.split(':')
 
         isohour = int(timestrarray[0])
         isominute = int(timestrarray[1])
 
-        if isominute > 60:
-            raise ValueError('String is not a valid ISO8601 time.')
-
-        if isohour == 24:
-            return datetime.time(hour=0, minute=0)
-
         #Since the time constructor doesn't handle fractional seconds, we put
         #the seconds in to a timedelta, and add it to the time before returning
         secondsdelta = datetime.timedelta(seconds = float(timestrarray[2]))
-
-        #Now combine todays date (just so we have a date object), the time, the
-        #delta, and return the time component
-        return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=isohour, minute=isominute)) + secondsdelta).time()
-    elif timestr.count(':') == 1:
-        #hh:mm
-        timestrarray = timestr.split(':')
-
-        isohour = int(timestrarray[0])
-        isominute = float(timestrarray[1]) #Minute may now be a fraction
-
-        if isominute > 60:
-            raise ValueError('String is not a valid ISO8601 time.')
-
-        if isohour == 24:
-            return datetime.time(hour=0, minute=0)
-
-        #Since the time constructor doesn't handle fractional minutes, we put
-        #the minutes in to a timedelta, and add it to the time before returning
-        minutesdelta = datetime.timedelta(minutes = isominute)
-
-        #Now combine todays date (just so we have a date object), the time, the
-        #delta, and return the time component
-        return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=isohour)) + minutesdelta).time()
     else:
-        #Format must be hhmmss, hhmm, or hh
-        if timestr.find('.') == -1:
-            #No time fractions
-            timestrlen = len(timestr)
+        #hhmmss or hhmmss.
+        isohour = int(timestr[0:2])
+        isominute = int(timestr[2:4])
 
-            if timestrlen == 6:
-                #hhmmss
-                isohour = int(timestr[0:2])
-                isominute = int(timestr[2:4])
-                isosecond = int(timestr[4:6])
+        #Since the time constructor doesn't handle fractional seconds, we put
+        #the seconds in to a timedelta, and add it to the time before returning
+        secondsdelta = datetime.timedelta(seconds = float(timestr[4:]))
 
-                if isominute > 60:
-                    raise ValueError('String is not a valid ISO8601 time.')
+    if isominute > 60:
+        raise ValueError('String is not a valid ISO8601 time.')
 
-                if isohour == 24:
-                    return datetime.time(hour=0, minute=0)
+    if isohour == 24:
+        return datetime.time(hour=0, minute=0)
 
-                return datetime.time(hour=isohour, minute=isominute, second=isosecond)
-            elif timestrlen == 4:
-                #hhmm
-                isohour = int(timestr[0:2])
-                isominute = int(timestr[2:4])
+    return build_time(datetime.time(hour=isohour, minute=isominute),
+                      secondsdelta)
 
-                if isominute > 60:
-                    raise ValueError('String is not a valid ISO8601 time.')
+def build_time(time, delta):
+    #Combine today's date (just so we have a date object), the time, the
+    #delta, and return the time component
+    base_datetime = datetime.datetime.combine(datetime.date.today(), time)
+    return (base_datetime + delta).time()
 
-                if isohour == 24:
-                    return datetime.time(hour=0, minute=0)
+def split_tz(isotimestr):
+    if isotimestr.find('+') != -1:
+        timestr = isotimestr[0:isotimestr.find('+')]
+        tzstr = isotimestr[isotimestr.find('+'):]
+    elif isotimestr.find('-') != -1:
+        timestr = isotimestr[0:isotimestr.find('-')]
+        tzstr = isotimestr[isotimestr.find('-'):]
+    elif isotimestr.endswith('Z'):
+        timestr = isotimestr[:-1]
+        tzstr = 'Z'
+    else:
+        timestr = isotimestr
+        tzstr = None
+    return (timestr, tzstr)
 
-                return datetime.time(hour=isohour, minute=isominute)
-            elif timestrlen == 2:
-                #hh
-                isohour = int(timestr[0:2])
-
-                if isohour == 24:
-                    return datetime.time(hour=0)
-
-                return datetime.time(hour=isohour)
-            else:
-                raise ValueError('String is not a valid ISO8601 time.')
-        else:
-            #The lowest order element is a fraction
-            timestrlen = len(timestr.split('.')[0])
-
-            if timestrlen == 6:
-                #hhmmss.
-                isohour = int(timestr[0:2])
-                isominute = int(timestr[2:4])
-
-                if isominute > 60:
-                    raise ValueError('String is not a valid ISO8601 time.')
-
-                if isohour == 24:
-                    return datetime.time(hour=0, minute=0)
-
-                #Since the time constructor doesn't handle fractional seconds, we put
-                #the seconds in to a timedelta, and add it to the time before returning
-                secondsdelta = datetime.timedelta(seconds = float(timestr[4:]))
-
-                #Now combine todays date (just so we have a date object), the time, the
-                #delta, and return the time component
-                return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=isohour, minute=isominute)) + secondsdelta).time()
-            elif timestrlen == 4:
-                #hhmm.
-                isohour = int(timestr[0:2])
-                isominute = float(timestr[2:])
-
-                if isominute > 60:
-                    raise ValueError('String is not a valid ISO8601 time.')
-
-                if isohour == 24:
-                    return datetime.time(hour=0, minute=0)
-
-                #Since the time constructor doesn't handle fractional minutes, we put
-                #the minutes in to a timedelta, and add it to the time before returning
-                minutesdelta = datetime.timedelta(minutes = isominute)
-
-                #Now combine todays date (just so we have a date object), the time, the
-                #delta, and return the time component
-                return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=isohour)) + minutesdelta).time()
-            elif timestrlen == 2:
-                #hh.
-                isohour = float(timestr)
-
-                if isohour == 24:
-                    return datetime.time(hour=0, minute=0)
-
-                #Since the time constructor doesn't handle fractional hours, we put
-                #the hours in to a timedelta, and add it to the time before returning
-                hoursdelta = datetime.timedelta(hours = isohour)
-
-                #Now combine todays date (just so we have a date object), the time, the
-                #delta, and return the time component
-                return (datetime.datetime.combine(datetime.date.today(), datetime.time(hour=0)) + hoursdelta).time()
+resolution_map = {
+    TimeResolution.Hours: parse_hour,
+    TimeResolution.Minutes: parse_minute_time,
+    TimeResolution.Seconds: parse_second_time
+}
