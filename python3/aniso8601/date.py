@@ -97,9 +97,9 @@ def parse_date(isodatestr):
     #YYYYDDD
     #
     #Note that the ISO8601 date format of ±YYYYY is expressly not supported
-    return resolution_map[get_date_resolution(isodatestr)](isodatestr)
+    return _resolution_map[get_date_resolution(isodatestr)](isodatestr)
 
-def parse_year(yearstr):
+def _parse_year(yearstr):
     #yearstr is of the format Y[YYY]
     #
     #0000 (1 BC) is not representible as a Python date so a ValueError is
@@ -117,7 +117,7 @@ def parse_year(yearstr):
         #Shift 0s in from the left to form complete year
         return datetime.date(int(yearstr.ljust(4, '0')), 1, 1)
 
-def parse_calendar_day(datestr):
+def _parse_calendar_day(datestr):
     #datestr is of the format YYYY-MM-DD or YYYYMMDD
     datestrlen = len(datestr)
 
@@ -135,7 +135,7 @@ def parse_calendar_day(datestr):
     #Since no 'time' is given, cast to a date
     return parseddatetime.date()
 
-def parse_calendar_month(datestr):
+def _parse_calendar_month(datestr):
     #datestr is of the format YYYY-MM
     datestrlen = len(datestr)
 
@@ -147,7 +147,7 @@ def parse_calendar_month(datestr):
     #Since no 'time' is given, cast to a date
     return parseddatetime.date()
 
-def parse_week_day(datestr):
+def _parse_week_day(datestr):
     #datestr is of the format YYYY-Www-D, YYYYWwwD
     #
     #W is the week number prefix, ww is the week number, between 1 and 53
@@ -185,7 +185,7 @@ def parse_week_day(datestr):
         else:
             raise ValueError('String is not a valid ISO8601 week date.')
 
-def parse_week(datestr):
+def _parse_week(datestr):
     #datestr is of the format YYYY-Www, YYYYWww
     #
     #W is the week number prefix, ww is the week number, between 1 and 53
@@ -217,7 +217,7 @@ def parse_week(datestr):
         else:
             raise ValueError('String is not a valid ISO8601 week date.')
 
-def parse_ordinal_date(datestr):
+def _parse_ordinal_date(datestr):
     #datestr is of the format YYYY-DDD or YYYYDDD
     #DDD can be from 1 - 365, this matches Python's definition
 
@@ -251,11 +251,11 @@ def _iso_year_start(isoyear):
     #Return the start of the year
     return fourth_jan - delta
 
-resolution_map = {
-    DateResolution.Day: parse_calendar_day,
-    DateResolution.Ordinal: parse_ordinal_date,
-    DateResolution.Month: parse_calendar_month,
-    DateResolution.Week: parse_week,
-    DateResolution.Weekday: parse_week_day,
-    DateResolution.Year: parse_year
+_resolution_map = {
+    DateResolution.Day: _parse_calendar_day,
+    DateResolution.Ordinal: _parse_ordinal_date,
+    DateResolution.Month: _parse_calendar_month,
+    DateResolution.Week: _parse_week,
+    DateResolution.Weekday: _parse_week_day,
+    DateResolution.Year: _parse_year
 }

@@ -115,11 +115,11 @@ def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedeli
 
     #Now, build and return the generator
     if iterations != None:
-        return date_generator(interval[0], intervaltimedelta, iterations)
+        return _date_generator(interval[0], intervaltimedelta, iterations)
     else:
-        return date_generator_unbounded(interval[0], intervaltimedelta)
+        return _date_generator_unbounded(interval[0], intervaltimedelta)
 
-def date_generator(startdate, timedelta, iterations):
+def _date_generator(startdate, timedelta, iterations):
     currentdate = startdate
     currentiteration = 0
 
@@ -130,7 +130,7 @@ def date_generator(startdate, timedelta, iterations):
         currentdate += timedelta
         currentiteration += 1
 
-def date_generator_unbounded(startdate, timedelta):
+def _date_generator_unbounded(startdate, timedelta):
     currentdate = startdate
 
     while True:

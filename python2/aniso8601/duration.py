@@ -23,11 +23,11 @@ def parse_duration(isodurationstr):
 
     #If Y, M, D, H, or S are in the string, assume it is a specified duration
     if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('W') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
-        return parse_duration_prescribed(isodurationstr)
+        return _parse_duration_prescribed(isodurationstr)
     else:
-        return parse_duration_combined(isodurationstr)
+        return _parse_duration_combined(isodurationstr)
 
-def parse_duration_prescribed(durationstr):
+def _parse_duration_prescribed(durationstr):
     #durationstr can be of the form PnYnMnDTnHnMnS or PnW
 
     #Make sure only the lowest order element has decimal precision
@@ -115,7 +115,7 @@ def parse_duration_prescribed(durationstr):
 
     return datetime.timedelta(weeks=weeks, days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
 
-def parse_duration_combined(durationstr):
+def _parse_duration_combined(durationstr):
     #Period of the form P<date>T<time>
 
     #Split the string in to its component parts

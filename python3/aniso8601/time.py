@@ -41,7 +41,7 @@ def get_time_resolution(isotimestr):
     #hhmm±hh
     #hh±hh
 
-    timestr = split_tz(isotimestr)[0]
+    timestr = _split_tz(isotimestr)[0]
 
     if timestr.count(':') == 2:
         #hh:mm:ss
@@ -101,14 +101,14 @@ def parse_time(isotimestr):
     #hhmm±hh
     #hh±hh
 
-    (timestr, tzstr) = split_tz(isotimestr)
+    (timestr, tzstr) = _split_tz(isotimestr)
 
     if tzstr == None:
-        return parse_time_naive(timestr)
+        return _parse_time_naive(timestr)
     elif tzstr == 'Z':
-        return parse_time_naive(timestr).replace(tzinfo=build_utcoffset('UTC', datetime.timedelta(hours=0)))
+        return _parse_time_naive(timestr).replace(tzinfo=build_utcoffset('UTC', datetime.timedelta(hours=0)))
     else:
-        return parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
+        return _parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
 
 def parse_datetime(isodatetimestr, delimiter='T'):
     #Given a string in ISO8601 date time format, return a datetime.datetime
@@ -124,7 +124,7 @@ def parse_datetime(isodatetimestr, delimiter='T'):
 
     return datetime.datetime.combine(datepart, timepart)
 
-def parse_time_naive(timestr):
+def _parse_time_naive(timestr):
     #timestr is of the format hh:mm:ss, hh:mm, hhmmss, hhmm, hh
     #
     #hh is between 0 and 24, 24 is not allowed in the Python time format, since
@@ -133,9 +133,9 @@ def parse_time_naive(timestr):
     #mm is between 0 and 60, with 60 used to denote a leap second
     #
     #No tzinfo will be included
-    return resolution_map[get_time_resolution(timestr)](timestr)
+    return _resolution_map[get_time_resolution(timestr)](timestr)
 
-def parse_hour(timestr):
+def _parse_hour(timestr):
     #Format must be hh or hh.
     isohour = float(timestr)
 
@@ -146,9 +146,9 @@ def parse_hour(timestr):
     #the hours in to a timedelta, and add it to the time before returning
     hoursdelta = datetime.timedelta(hours=isohour)
 
-    return build_time(datetime.time(hour=0), hoursdelta)
+    return _build_time(datetime.time(hour=0), hoursdelta)
 
-def parse_minute_time(timestr):
+def _parse_minute_time(timestr):
     #Format must be hhmm, hhmm., hh:mm or hh:mm.
     if timestr.count(':') == 1:
         #hh:mm or hh:mm.
@@ -171,9 +171,9 @@ def parse_minute_time(timestr):
     #the minutes in to a timedelta, and add it to the time before returning
     minutesdelta = datetime.timedelta(minutes = isominute)
 
-    return build_time(datetime.time(hour=isohour), minutesdelta)
+    return _build_time(datetime.time(hour=isohour), minutesdelta)
 
-def parse_second_time(timestr):
+def _parse_second_time(timestr):
     #Format must be hhmmss, hhmmss., hh:mm:ss or hh:mm:ss.
     if timestr.count(':') == 2:
         #hh:mm:ss or hh:mm:ss.
@@ -200,16 +200,16 @@ def parse_second_time(timestr):
     if isohour == 24:
         return datetime.time(hour=0, minute=0)
 
-    return build_time(datetime.time(hour=isohour, minute=isominute),
+    return _build_time(datetime.time(hour=isohour, minute=isominute),
                       secondsdelta)
 
-def build_time(time, delta):
+def _build_time(time, delta):
     #Combine today's date (just so we have a date object), the time, the
     #delta, and return the time component
     base_datetime = datetime.datetime.combine(datetime.date.today(), time)
     return (base_datetime + delta).time()
 
-def split_tz(isotimestr):
+def _split_tz(isotimestr):
     if isotimestr.find('+') != -1:
         timestr = isotimestr[0:isotimestr.find('+')]
         tzstr = isotimestr[isotimestr.find('+'):]
@@ -224,8 +224,8 @@ def split_tz(isotimestr):
         tzstr = None
     return (timestr, tzstr)
 
-resolution_map = {
-    TimeResolution.Hours: parse_hour,
-    TimeResolution.Minutes: parse_minute_time,
-    TimeResolution.Seconds: parse_second_time
+_resolution_map = {
+    TimeResolution.Hours: _parse_hour,
+    TimeResolution.Minutes: _parse_minute_time,
+    TimeResolution.Seconds: _parse_second_time
 }

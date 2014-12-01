@@ -9,7 +9,7 @@
 import unittest
 import datetime
 
-from aniso8601.time import get_time_resolution, parse_time, parse_datetime, parse_time_naive
+from aniso8601.time import get_time_resolution, parse_time, parse_datetime, _parse_time_naive
 from aniso8601.resolution import TimeResolution
 
 class TestTimeFunctions(unittest.TestCase):
@@ -283,73 +283,73 @@ class TestTimeFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.tzname(None), '-12:34')
 
     def test_parse_time_naive(self):
-        time = parse_time_naive('01:23:45')
+        time = _parse_time_naive('01:23:45')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 45)
 
-        time = parse_time_naive('24:00:00')
+        time = _parse_time_naive('24:00:00')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
         self.assertEqual(time.second, 0)
 
-        time = parse_time_naive('23:21:28.512400')
+        time = _parse_time_naive('23:21:28.512400')
         self.assertEqual(time.hour, 23)
         self.assertEqual(time.minute, 21)
         self.assertEqual(time.second, 28)
         self.assertEqual(time.microsecond, 512400)
 
-        time = parse_time_naive('01:23')
+        time = _parse_time_naive('01:23')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
 
-        time = parse_time_naive('24:00')
+        time = _parse_time_naive('24:00')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
 
-        time = parse_time_naive('01:23.4567')
+        time = _parse_time_naive('01:23.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 27)
         self.assertEqual(time.microsecond, 402000)
 
-        time = parse_time_naive('012345')
+        time = _parse_time_naive('012345')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 45)
 
-        time = parse_time_naive('240000')
+        time = _parse_time_naive('240000')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
         self.assertEqual(time.second, 0)
 
-        time = parse_time_naive('0123')
+        time = _parse_time_naive('0123')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
 
-        time = parse_time_naive('2400')
+        time = _parse_time_naive('2400')
         self.assertEqual(time.hour, 0)
         self.assertEqual(time.minute, 0)
 
-        time = parse_time_naive('01')
+        time = _parse_time_naive('01')
         self.assertEqual(time.hour, 1)
 
-        time = parse_time_naive('24')
+        time = _parse_time_naive('24')
         self.assertEqual(time.hour, 0)
 
-        time = parse_time_naive('232128.512400')
+        time = _parse_time_naive('232128.512400')
         self.assertEqual(time.hour, 23)
         self.assertEqual(time.minute, 21)
         self.assertEqual(time.second, 28)
         self.assertEqual(time.microsecond, 512400)
 
-        time = parse_time_naive('0123.4567')
+        time = _parse_time_naive('0123.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 23)
         self.assertEqual(time.second, 27)
         self.assertEqual(time.microsecond, 402000)
 
-        time = parse_time_naive('01.4567')
+        time = _parse_time_naive('01.4567')
         self.assertEqual(time.hour, 1)
         self.assertEqual(time.minute, 27)
         self.assertEqual(time.second, 24)
