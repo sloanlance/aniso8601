@@ -211,7 +211,7 @@ Note that you should never try to convert a generator produced by an unbounded i
   >>> list(aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00'))
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "aniso8601/__init__.py", line 149, in date_generator_unbounded
+    File "aniso8601/__init__.py", line 140, in date_generator_unbounded
       currentdate += timedelta
   OverflowError: date value out of range
 
