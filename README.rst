@@ -215,6 +215,29 @@ Note that you should never try to convert a generator produced by an unbounded i
       currentdate += timedelta
   OverflowError: date value out of range
 
+Date and time resolution
+------------------------
+
+It some situations, it may be useful to figure out the resolution provided by an ISO 8601 date or time string. Two functions are provided for this purpose.
+
+To get the resolution of a ISO 8601 time string::
+
+  >>> aniso8601.get_time_resolution('11:31:14') == aniso8601.resolution.TimeResolution.Seconds
+  True
+  >>> aniso8601.get_time_resolution('11:31') == aniso8601.resolution.TimeResolution.Minutes
+  True
+  >>> aniso8601.get_time_resolution('11') == aniso8601.resolution.TimeResolution.Hours
+  True
+
+Similarly, for an ISO 8601 date string::
+
+  >>> aniso8601.get_date_resolution('1981-04-05') == aniso8601.resolution.DateResolution.Day
+  True
+  >>> aniso8601.get_date_resolution('1981-04') == aniso8601.resolution.DateResolution.Month
+  True
+  >>> aniso8601.get_date_resolution('1981') == aniso8601.resolution.DateResolution.Year
+  True
+
 Tests
 =====
 
