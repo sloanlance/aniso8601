@@ -9,7 +9,9 @@
 import unittest
 import datetime
 
-from aniso8601.time import get_time_resolution, parse_time, parse_datetime, _parse_time_naive
+from aniso8601.time import get_time_resolution, parse_time, parse_datetime, \
+     _parse_time_naive, _parse_hour, _parse_minute_time, _parse_second_time, \
+     _build_time, _split_tz
 from aniso8601.resolution import TimeResolution
 
 class TestTimeFunctions(unittest.TestCase):
@@ -354,3 +356,141 @@ class TestTimeFunctions(unittest.TestCase):
         self.assertEqual(time.minute, 27)
         self.assertEqual(time.second, 24)
         self.assertEqual(time.microsecond, 120000)
+
+    def test_parse_hour(self):
+        time = _parse_hour('01')
+        self.assertEqual(time.hour, 1)
+
+        time = _parse_hour('24')
+        self.assertEqual(time.hour, 0)
+
+        time = _parse_hour('01.4567')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 27)
+        self.assertEqual(time.second, 24)
+        self.assertEqual(time.microsecond, 120000)
+
+        time = _parse_hour('12.5')
+        self.assertEqual(time.hour, 12)
+        self.assertEqual(time.minute, 30)
+
+    def test_parse_minute_time(self):
+        time = _parse_minute_time('01:23')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+
+        time = _parse_minute_time('24:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+
+        time = _parse_minute_time('01:23.4567')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 27)
+        self.assertEqual(time.microsecond, 402000)
+
+        time = _parse_minute_time('0123')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+
+        time = _parse_minute_time('2400')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+
+        time = _parse_minute_time('0123.4567')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 27)
+        self.assertEqual(time.microsecond, 402000)
+
+    def test_parse_second_time(self):
+        time = _parse_second_time('01:23:45')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 45)
+
+        time = _parse_second_time('24:00:00')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        self.assertEqual(time.second, 0)
+
+        time = _parse_second_time('23:21:28.512400')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+
+        time = _parse_second_time('012345')
+        self.assertEqual(time.hour, 1)
+        self.assertEqual(time.minute, 23)
+        self.assertEqual(time.second, 45)
+
+        time = _parse_second_time('240000')
+        self.assertEqual(time.hour, 0)
+        self.assertEqual(time.minute, 0)
+        self.assertEqual(time.second, 0)
+
+        time = _parse_second_time('232128.512400')
+        self.assertEqual(time.hour, 23)
+        self.assertEqual(time.minute, 21)
+        self.assertEqual(time.second, 28)
+        self.assertEqual(time.microsecond, 512400)
+
+    def test_build_time(self):
+        self.assertEqual(_build_time(datetime.time(hour=1), datetime.timedelta(hours=1.1, minutes=2.2, seconds=3.3)), datetime.time(hour=2, minute=8, second=15, microsecond=300000))
+
+        #Make sure it overflows correctly
+        self.assertEqual(_build_time(datetime.time.max, datetime.timedelta(microseconds=1)), datetime.time.min)
+
+    def test_split_tz(self):
+        self.assertEqual(_split_tz('01:23:45'), ('01:23:45', None))
+
+        self.assertEqual(_split_tz('24:00:00'), ('24:00:00', None))
+
+        self.assertEqual(_split_tz('23:21:28.512400'), ('23:21:28.512400', None))
+
+        self.assertEqual(_split_tz('01:23'), ('01:23', None))
+
+        self.assertEqual(_split_tz('24:00'), ('24:00', None))
+
+        self.assertEqual(_split_tz('01:23.4567'), ('01:23.4567', None))
+
+        self.assertEqual(_split_tz('012345'), ('012345', None))
+
+        self.assertEqual(_split_tz('240000'), ('240000', None))
+
+        self.assertEqual(_split_tz('0123'), ('0123', None))
+
+        self.assertEqual(_split_tz('2400'), ('2400', None))
+
+        self.assertEqual(_split_tz('01'), ('01', None))
+
+        self.assertEqual(_split_tz('24'), ('24', None))
+
+        self.assertEqual(_split_tz('12.5'), ('12.5', None))
+
+        self.assertEqual(_split_tz('232128.512400+00:00'), ('232128.512400', '+00:00'))
+
+        self.assertEqual(_split_tz('0123.4567+00:00'), ('0123.4567', '+00:00'))
+
+        self.assertEqual(_split_tz('01.4567+00:00'), ('01.4567', '+00:00'))
+
+        self.assertEqual(_split_tz('01:23:45+00:00'), ('01:23:45', '+00:00'))
+
+        self.assertEqual(_split_tz('24:00:00+00:00'), ('24:00:00', '+00:00'))
+
+        self.assertEqual(_split_tz('23:21:28.512400+00:00'), ('23:21:28.512400', '+00:00'))
+
+        self.assertEqual(_split_tz('01:23+00:00'), ('01:23', '+00:00'))
+
+        self.assertEqual(_split_tz('24:00+00:00'), ('24:00', '+00:00'))
+
+        self.assertEqual(_split_tz('01:23.4567+00:00'), ('01:23.4567', '+00:00'))
+
+        self.assertEqual(_split_tz('23:21:28.512400+11:15'), ('23:21:28.512400', '+11:15'))
+
+        self.assertEqual(_split_tz('23:21:28.512400-12:34'), ('23:21:28.512400', '-12:34'))
+
+        self.assertEqual(_split_tz('23:21:28.512400Z'), ('23:21:28.512400', 'Z'))
+
+        self.assertEqual(_split_tz('06:14:00.000123Z'), ('06:14:00.000123', 'Z'))
