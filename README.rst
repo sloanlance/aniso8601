@@ -218,7 +218,7 @@ Note that you should never try to convert a generator produced by an unbounded i
 Date and time resolution
 ------------------------
 
-It some situations, it may be useful to figure out the resolution provided by an ISO 8601 date or time string. Two functions are provided for this purpose.
+In some situations, it may be useful to figure out the resolution provided by an ISO 8601 date or time string. Two functions are provided for this purpose.
 
 To get the resolution of a ISO 8601 time string::
 
