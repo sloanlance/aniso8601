@@ -8,7 +8,7 @@
 
 import datetime
 
-from .resolution import DateResolution
+from aniso8601.resolution import DateResolution
 
 def get_date_resolution(isodatestr):
     #Valid string formats are:

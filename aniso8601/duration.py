@@ -8,8 +8,9 @@
 
 import datetime
 
-from .date import parse_date
-from .time import parse_time
+from aniso8601.date import parse_date
+from aniso8601.time import parse_time
+from aniso8601 import compat
 
 def parse_duration(isodurationstr):
     #Given a string representing an ISO 8601 duration, return a
@@ -141,7 +142,7 @@ def _parse_duration_element(durationstr, elementstr):
     durationstartindex = 0
     durationendindex = durationstr.find(elementstr)
 
-    for characterindex in range(durationendindex - 1, 0, -1):
+    for characterindex in compat.range(durationendindex - 1, 0, -1):
         if durationstr[characterindex].isalpha() == True:
             durationstartindex = characterindex
             break

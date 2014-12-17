@@ -8,9 +8,9 @@
 
 import datetime
 
-from timezone import parse_timezone, build_utcoffset
-from date import parse_date
-from resolution import TimeResolution
+from aniso8601.timezone import parse_timezone, build_utcoffset
+from aniso8601.date import parse_date
+from aniso8601.resolution import TimeResolution
 
 def get_time_resolution(isotimestr):
     #Valid time formats are:
