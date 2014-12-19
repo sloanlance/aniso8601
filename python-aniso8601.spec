@@ -68,9 +68,9 @@ popd
 
 %if ! 0%{?rhel} || 0%{?rhel} > 6
 %check
-PYTHONPATH=%{buildroot}/%{python_sitelib} %{__python2} -m unittest discover python2/aniso8601/tests/
+PYTHONPATH=%{buildroot}/%{python_sitelib} %{__python2} -m unittest discover aniso8601/tests/
 %if 0%{?with_python3}
-PYTHONPATH=%{buildroot}/%{python3_sitelib} %{__python3} -m unittest discover python3/aniso8601/tests/
+PYTHONPATH=%{buildroot}/%{python3_sitelib} %{__python3} -m unittest discover aniso8601/tests/
 %endif
 %endif
 
@@ -86,6 +86,9 @@ PYTHONPATH=%{buildroot}/%{python3_sitelib} %{__python3} -m unittest discover pyt
 %endif
 
 %changelog
+* Thu Dec 18 2014 Brandon Nielsen <nielsenb@jetfuse.net> - 0.91dev-1
+- update for merged python2 / python3 trees
+
 * Tue Nov 18 2014 Jan Sedlak <jsedlak@redhat.com> - 0.85-1
 - change license to BSD, new version
 
