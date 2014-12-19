@@ -101,3 +101,38 @@ class TestTimezoneFunctions(unittest.TestCase):
 
         self.assertEqual(resultutcoffset._name, testutcoffset._name)
         self.assertEqual(resultutcoffset._utcdelta, testutcoffset._utcdelta)
+
+    def test_string_representation(self):
+        #Make sure UTC offsets can be printed out prettily
+        tzinfoobject = parse_timezone('+00:00')
+        self.assertEqual(str(tzinfoobject), '+0:00:00 UTC')
+
+        tzinfoobject = parse_timezone('+01:00')
+        self.assertEqual(str(tzinfoobject), '+1:00:00 UTC')
+
+        tzinfoobject = parse_timezone('-01:00')
+        self.assertEqual(str(tzinfoobject), '-1:00:00 UTC')
+
+        tzinfoobject = parse_timezone('+00:12')
+        self.assertEqual(str(tzinfoobject), '+0:12:00 UTC')
+
+        tzinfoobject = parse_timezone('-00:12')
+        self.assertEqual(str(tzinfoobject), '-0:12:00 UTC')
+
+        tzinfoobject = parse_timezone('+01:23')
+        self.assertEqual(str(tzinfoobject), '+1:23:00 UTC')
+
+        tzinfoobject = parse_timezone('-01:23')
+        self.assertEqual(str(tzinfoobject), '-1:23:00 UTC')
+
+        tzinfoobject = parse_timezone('+24:00')
+        self.assertEqual(str(tzinfoobject), '+1 day, 0:00:00 UTC')
+
+        tzinfoobject = parse_timezone('-24:00')
+        self.assertEqual(str(tzinfoobject), '-1 day, 0:00:00 UTC')
+
+        tzinfoobject = parse_timezone('+49:27')
+        self.assertEqual(str(tzinfoobject), '+2 days, 1:27:00 UTC')
+
+        tzinfoobject = parse_timezone('-49:27')
+        self.assertEqual(str(tzinfoobject), '-2 days, 1:27:00 UTC')
