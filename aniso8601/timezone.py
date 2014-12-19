@@ -74,20 +74,24 @@ class UTCOffset(datetime.tzinfo):
             #somewhat unusual results for negative timedeltas.
             #
             #Clean this up for printing purposes
-            deltaDays = abs(self._utcdelta.days + 1)
+            correctedDays = abs(self._utcdelta.days + 1) #Negative deltas start at -1 day
 
-            deltaSeconds = (24 * 60 * 60) - self._utcdelta.seconds
+            deltaSeconds = (24 * 60 * 60) - self._utcdelta.seconds #Negative deltas have a positive seconds
 
-            hours, remainder = divmod(deltaSeconds, 3600)
-            minutes, seconds = divmod(remainder, 60)
+            days, remainder = divmod(deltaSeconds, 24 * 60 * 60) #(24 hours / day) * (60 minutes / hour) * (60 seconds / hour)
+            hours, remainder = divmod(remainder, 1 * 60 * 60) #(1 hour) * (60 minutes / hour) * (60 seconds / hour)
+            minutes, seconds = divmod(remainder, 1 * 60) #(1 minute) * (60 seconds / minute)
 
-            if deltaDays == 0:
+            #Add any remaining days to the correctedDays count
+            correctedDays += days
+
+            if correctedDays == 0:
                 return '-{0}:{1:02}:{2:02} UTC'.format(hours, minutes, seconds)
             else:
-                if deltaDays == 1:
+                if correctedDays == 1:
                     return '-1 day, {0}:{1:02}:{2:02} UTC'.format(hours, minutes, seconds)
                 else:
-                    return '-{0} days, {1}:{2:02}:{3:02} UTC'.format(deltaDays, hours, minutes, seconds)
+                    return '-{0} days, {1}:{2:02}:{3:02} UTC'.format(correctedDays, hours, minutes, seconds)
 
     def setname(self, name):
         self._name = name
