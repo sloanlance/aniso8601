@@ -7,9 +7,9 @@
 # of the BSD license.  See the LICENSE file for details.
 
 from datetime import datetime
-from duration import parse_duration
-from time import parse_datetime
-from date import parse_date
+from aniso8601.duration import parse_duration
+from aniso8601.time import parse_datetime
+from aniso8601.date import parse_date
 
 def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
     #Given a string representing an ISO8601 interval, return a
