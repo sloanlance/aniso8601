@@ -44,17 +44,17 @@ To parse a typical ISO 8601 datetime string::
 
   >>> import aniso8601
   >>> aniso8601.parse_datetime('1977-06-10T12:00:00Z')
-  datetime.datetime(1977, 6, 10, 12, 0, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbd90>)
+  datetime.datetime(1977, 6, 10, 12, 0, tzinfo=+0:00:00 UTC)
 
 Alternative delimiters can be specified, for example, a space::
 
   >>> aniso8601.parse_datetime('1977-06-10 12:00:00Z', delimiter=' ')
-  datetime.datetime(1977, 6, 10, 12, 0, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbf50>)
+  datetime.datetime(1977, 6, 10, 12, 0, tzinfo=+0:00:00 UTC)
 
 UTC offsets are supported::
 
   >>> aniso8601.parse_datetime('1979-06-05T08:00:00-08:00')
-  datetime.datetime(1979, 6, 5, 8, 0, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbf50>)
+  datetime.datetime(1979, 6, 5, 8, 0, tzinfo=-8:00:00 UTC)
 
 If a UTC offset is not specified, the returned datetime will be naive::
 
@@ -102,9 +102,9 @@ As with all of the above, basic format is supported::
 A UTC offset can be specified for times::
 
   >>> aniso8601.parse_time('17:18:19-02:30')
-  datetime.time(17, 18, 19, tzinfo=<aniso8601.UTCOffset object at 0x7f44fad82c50>)
+  datetime.time(17, 18, 19, tzinfo=-2:30:00 UTC)
   >>> aniso8601.parse_time('171819Z')
-  datetime.time(17, 18, 19, tzinfo=<aniso8601.UTCOffset object at 0x7f44fadbbd90>)
+  datetime.time(17, 18, 19, tzinfo=+0:00:00 UTC)
 
 Reduced accuracy is supported::
 
@@ -161,7 +161,7 @@ To parse an interval specified by a start and end::
 Intervals specified by a start time and a duration are supported::
 
   >>> aniso8601.parse_interval('2007-03-01T13:00:00Z/P1Y2M10DT2H30M')
-  (datetime.datetime(2007, 3, 1, 13, 0, tzinfo=<aniso8601.UTCOffset object at 0x7f698d44d110>), datetime.datetime(2008, 5, 9, 15, 30, tzinfo=<aniso8601.UTCOffset object at 0x7f698d44d110>))
+  (datetime.datetime(2007, 3, 1, 13, 0, tzinfo=+0:00:00 UTC), datetime.datetime(2008, 5, 9, 15, 30, tzinfo=+0:00:00 UTC))
 
 A duration can also be specified by a duration and end time::
 
