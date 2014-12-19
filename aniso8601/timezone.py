@@ -64,6 +64,31 @@ def build_utcoffset(name, utcdelta):
     return returnoffset
 
 class UTCOffset(datetime.tzinfo):
+    def __repr__(self):
+        if self._utcdelta >= datetime.timedelta(hours=0):
+            return '+{0} UTC'.format(self._utcdelta)
+        else:
+            #From the docs:
+            #String representations of timedelta objects are normalized
+            #similarly to their internal representation. This leads to
+            #somewhat unusual results for negative timedeltas.
+            #
+            #Clean this up for printing purposes
+            deltaDays = abs(self._utcdelta.days + 1)
+
+            deltaSeconds = (24 * 60 * 60) - self._utcdelta.seconds
+
+            hours, remainder = divmod(deltaSeconds, 3600)
+            minutes, seconds = divmod(remainder, 60)
+
+            if deltaDays == 0:
+                return '-{0}:{1:02}:{2:02} UTC'.format(hours, minutes, seconds)
+            else:
+                if deltaDays == 1:
+                    return '-1 day, {0}:{1:02}:{2:02} UTC'.format(hours, minutes, seconds)
+                else:
+                    return '-{0} days, {1}:{2:02}:{3:02} UTC'.format(deltaDays, hours, minutes, seconds)
+
     def setname(self, name):
         self._name = name
 
