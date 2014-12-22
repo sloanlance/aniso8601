@@ -1,4 +1,7 @@
 include LICENSE
 include README.rst
-recursive-include python2 *
-recursive-include python3 *
+recursive-include aniso8601 *
+
+#Exclude compiled files
+global-exclude *.pyo
+global-exclude *.pyc
