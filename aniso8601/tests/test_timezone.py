@@ -136,3 +136,9 @@ class TestTimezoneFunctions(unittest.TestCase):
 
         tzinfoobject = parse_timezone('-49:27')
         self.assertEqual(str(tzinfoobject), '-2 days, 1:27:00 UTC')
+
+    def test_datetime_tzinfo_dst(self):
+        tzinfoobject = parse_timezone('+04:00')
+        datetime.datetime.now(tzinfoobject)
+        # Will raise ValueError or a TypeError if dst info is invalid
+        assert True
