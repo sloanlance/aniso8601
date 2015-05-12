@@ -108,4 +108,5 @@ class UTCOffset(datetime.tzinfo):
     def dst(self, dt):
         #ISO8601 specifies offsets should be different if DST is required,
         #instead of allowing for a DST to be specified
-        return None
+        # https://docs.python.org/2/library/datetime.html#datetime.tzinfo.dst
+        return datetime.timedelta(0)
