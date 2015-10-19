@@ -106,6 +106,40 @@ class TestIntervalFunctions(unittest.TestCase):
         self.assertEqual(resultinterval[0], datetime.date(year=2014, month=11, day=12))
         self.assertEqual(resultinterval[1], datetime.datetime(year=2014, month=11, day=12, hour=4, minute=54, second=6, microsecond=500000))
 
+        #Some relativedelta examples
+        #http://dateutil.readthedocs.org/en/latest/examples.html#relativedelta-examples
+        resultinterval = parse_interval('2003-01-27/P1M', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2003, month=1, day=27))
+        self.assertEqual(resultinterval[1], datetime.date(year=2003, month=2, day=27))
+
+        resultinterval = parse_interval('2003-01-31/P1M', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2003, month=1, day=31))
+        self.assertEqual(resultinterval[1], datetime.date(year=2003, month=2, day=28))
+
+        resultinterval = parse_interval('2003-01-31/P2M', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2003, month=1, day=31))
+        self.assertEqual(resultinterval[1], datetime.date(year=2003, month=3, day=31))
+
+        resultinterval = parse_interval('2000-02-28/P1Y', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2000, month=2, day=28))
+        self.assertEqual(resultinterval[1], datetime.date(year=2001, month=2, day=28))
+
+        resultinterval = parse_interval('1999-02-28/P1Y', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=1999, month=2, day=28))
+        self.assertEqual(resultinterval[1], datetime.date(year=2000, month=2, day=28))
+
+        resultinterval = parse_interval('1999-03-01/P1Y', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=1999, month=3, day=1))
+        self.assertEqual(resultinterval[1], datetime.date(year=2000, month=3, day=1))
+
+        resultinterval = parse_interval('P1Y/2001-02-28', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2001, month=2, day=28))
+        self.assertEqual(resultinterval[1], datetime.date(year=2000, month=2, day=28))
+
+        resultinterval = parse_interval('P1Y/2001-03-01', relative=True)
+        self.assertEqual(resultinterval[0], datetime.date(year=2001, month=3, day=1))
+        self.assertEqual(resultinterval[1], datetime.date(year=2000, month=3, day=1))
+
         resultinterval = parse_interval('1980-03-05T01:01:00/1981-04-05T01:01:00', relative=True)
         self.assertEqual(resultinterval[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
