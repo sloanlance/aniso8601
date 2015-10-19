@@ -114,7 +114,11 @@ def _parse_duration_prescribed(durationstr, relative):
             seconds = 0
 
     if relative == True:
-        return dateutil.relativedelta.relativedelta(years=years, months=months, weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds)
+        if int(years) != years or int(months) != months:
+            #https://github.com/dateutil/dateutil/issues/40
+            raise ValueError('Fractional months and years are not defined for relative intervals.')
+
+        return dateutil.relativedelta.relativedelta(years=int(years), months=int(months), weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds)
     else:
         #Note that weeks can be handled without conversion to days
         totaldays = years * 365 + months * 30 + days

@@ -214,17 +214,19 @@ class TestDurationFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', True)
 
+        #Fractional months and years are not defined
+        #https://github.com/dateutil/dateutil/issues/40
+        with self.assertRaises(ValueError):
+            _parse_duration_prescribed('P1.5Y', True)
+
+        with self.assertRaises(ValueError):
+            _parse_duration_prescribed('P1.5M', True)
+
         resultduration = _parse_duration_prescribed('P1Y', True)
         self.assertEqual(resultduration.years, 1)
 
-        resultduration = _parse_duration_prescribed('P1.5Y', True)
-        self.assertEqual(resultduration.years, 1.5)
-
         resultduration = _parse_duration_prescribed('P1M', True)
         self.assertEqual(resultduration.months, 1)
-
-        resultduration = _parse_duration_prescribed('P1.5M', True)
-        self.assertEqual(resultduration.months, 1.5)
 
         #Add the relative ‘days’ argument to the absolute day. Notice that the ‘weeks’ argument is multiplied by 7 and added to ‘days’.
         #http://dateutil.readthedocs.org/en/latest/relativedelta.html
