@@ -7,14 +7,16 @@
 # of the BSD license.  See the LICENSE file for details.
 
 import datetime
+import dateutil.relativedelta
 
 from aniso8601.date import parse_date
 from aniso8601.time import parse_time
 from aniso8601 import compat
 
-def parse_duration(isodurationstr):
+def parse_duration(isodurationstr, relative=False):
     #Given a string representing an ISO 8601 duration, return a
-    #datetime.timedelta that matches the given duration. Valid formts are:
+    #datetime.timedelta (or dateutil.relativedelta.relativedelta
+    #if relative=True) that matches the given duration. Valid formats are:
     #
     #PnYnMnDTnHnMnS (or any reduced precision equivalent)
     #P<date>T<time>
@@ -24,11 +26,11 @@ def parse_duration(isodurationstr):
 
     #If Y, M, D, H, or S are in the string, assume it is a specified duration
     if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('W') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
-        return _parse_duration_prescribed(isodurationstr)
+        return _parse_duration_prescribed(isodurationstr, relative)
     else:
-        return _parse_duration_combined(isodurationstr)
+        return _parse_duration_combined(isodurationstr, relative)
 
-def _parse_duration_prescribed(durationstr):
+def _parse_duration_prescribed(durationstr, relative):
     #durationstr can be of the form PnYnMnDTnHnMnS or PnW
 
     #Make sure only the lowest order element has decimal precision
@@ -111,12 +113,15 @@ def _parse_duration_prescribed(durationstr):
         else:
             seconds = 0
 
-    #Note that weeks can be handled without conversion to days
-    totaldays = years * 365 + months * 30 + days
+    if relative == True:
+        return dateutil.relativedelta.relativedelta(years=years, months=months, weeks=weeks, days=days, hours=hours, minutes=minutes, seconds=seconds)
+    else:
+        #Note that weeks can be handled without conversion to days
+        totaldays = years * 365 + months * 30 + days
 
-    return datetime.timedelta(weeks=weeks, days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
+        return datetime.timedelta(weeks=weeks, days=totaldays, hours=hours, minutes=minutes, seconds=seconds)
 
-def _parse_duration_combined(durationstr):
+def _parse_duration_combined(durationstr, relative):
     #Period of the form P<date>T<time>
 
     #Split the string in to its component parts
@@ -125,9 +130,12 @@ def _parse_duration_combined(durationstr):
     datevalue = parse_date(datepart)
     timevalue = parse_time(timepart)
 
-    totaldays = datevalue.year * 365 + datevalue.month * 30 + datevalue.day
+    if relative == True:
+        return dateutil.relativedelta.relativedelta(years=datevalue.year, months=datevalue.month, days=datevalue.day, hours=timevalue.hour, minutes=timevalue.minute, seconds=timevalue.second, microseconds=timevalue.microsecond)
+    else:
+        totaldays = datevalue.year * 365 + datevalue.month * 30 + datevalue.day
 
-    return datetime.timedelta(days=totaldays, hours=timevalue.hour, minutes=timevalue.minute, seconds=timevalue.second, microseconds=timevalue.microsecond)
+        return datetime.timedelta(days=totaldays, hours=timevalue.hour, minutes=timevalue.minute, seconds=timevalue.second, microseconds=timevalue.microsecond)
 
 def _parse_duration_element(durationstr, elementstr):
     #Extracts the specified portion of a duration, for instance, given:

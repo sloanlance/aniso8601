@@ -240,9 +240,13 @@ Similarly, for an ISO 8601 date string::
 Tests
 =====
 
-To run the unit tests, in your source checkout, navigate to the source directory for the Python version being worked on (python2, python3) and type::
+To run the unit tests, navigate to the source directory and run the tests for the python version being worked on (python2, python3)::
 
-   $ python -m unittest discover aniso8601/tests/
+   $ python2 -m unittest discover aniso8601/tests/
+
+or::
+
+   $ python3 -m unittest discover aniso8601/tests/
 
 Contributing
 ============
