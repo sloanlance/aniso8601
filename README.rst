@@ -20,6 +20,7 @@ Features
  - Parse a repeating interval, get a date or datetime `generator <http://www.python.org/dev/peps/pep-0255/>`_
 
 * UTC offset represented as fixed-offset tzinfo
+* `dateutil.relativedelta <http://dateutil.readthedocs.org/en/latest/relativedelta.html>`_ available for calendar accuracy
 * No regular expressions
 
 Installation
@@ -148,6 +149,31 @@ Parsing a duration from a combined date and time is supported as well::
   >>> aniso8601.parse_duration('P0001-01-02T01:30:5')
   datetime.timedelta(397, 5405)
 
+The above treat years as 365 days and months as 30 days. If calendar level accuracy is required, the relative keyword argument can be used::
+
+  >>> import aniso8601
+  >>> from datetime import date
+  >>> one_month = aniso8601.parse_duration('P1M', relative=True)
+  >>> print one_month
+  relativedelta(months=+1)
+  >>> date(2003,1,27) + one_month
+  datetime.date(2003, 2, 27)
+  >>> date(2003,1,31) + one_month
+  datetime.date(2003, 2, 28)
+  >>> date(2003,1,31) + two_months
+  datetime.date(2003, 3, 31)
+
+Since it a relative fractional month or year is not logical. A ValueError is raised when attempting to parse a duration with `relative=True` and fractional month or year::
+
+  >>> aniso8601.parse_duration('P2.1Y', relative=True)
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "aniso8601/duration.py", line 29, in parse_duration
+      return _parse_duration_prescribed(isodurationstr, relative)
+    File "aniso8601/duration.py", line 119, in _parse_duration_prescribed
+      raise ValueError('Fractional months and years are not defined for relative intervals.')
+  ValueError: Fractional months and years are not defined for relative intervals.
+
 Parsing intervals
 -----------------
 
@@ -213,6 +239,28 @@ Note that you should never try to convert a generator produced by an unbounded i
     File "aniso8601/__init__.py", line 140, in date_generator_unbounded
       currentdate += timedelta
   OverflowError: date value out of range
+
+The above treat years as 365 days and months as 30 days. If calendar level accuracy is required, the relative keyword argument can be used::
+
+  >>> aniso8601.parse_interval('2003-01-27/P1M', relative=True)
+  (datetime.date(2003, 1, 27), datetime.date(2003, 2, 27))
+  >>> aniso8601.parse_interval('2003-01-31/P1M', relative=True)
+  (datetime.date(2003, 1, 31), datetime.date(2003, 2, 28))
+  >>> aniso8601.parse_interval('P1Y/2001-02-28', relative=True)
+  (datetime.date(2001, 2, 28), datetime.date(2000, 2, 28)
+
+Fractional years and months do not make sense for relative intervals. A ValueError is raised when attempting to parse an interval with `relative=True` and a fractional month or year::
+
+  >>> aniso8601.parse_interval('P1.1Y/2001-02-28', relative=True)
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "aniso8601/interval.py", line 51, in parse_interval
+      duration = parse_duration(firstpart, relative=relative)
+    File "aniso8601/duration.py", line 29, in parse_duration
+      return _parse_duration_prescribed(isodurationstr, relative)
+    File "aniso8601/duration.py", line 119, in _parse_duration_prescribed
+      raise ValueError('Fractional months and years are not defined for relative intervals.')
+  ValueError: Fractional months and years are not defined for relative intervals.
 
 Date and time resolution
 ------------------------
