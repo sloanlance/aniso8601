@@ -11,7 +11,7 @@ from aniso8601.duration import parse_duration
 from aniso8601.time import parse_datetime
 from aniso8601.date import parse_date
 
-def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
+def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T', relative=False):
     #Given a string representing an ISO8601 interval, return a
     #tuple of datetime.date or date.datetime objects representing the beginning
     #and end of the specified interval. Valid formats are:
@@ -42,13 +42,13 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
         #We need to figure out if <end> is a date, or a datetime
         if secondpart.find(datetimedelimiter) != -1:
             #<end> is a datetime
-            duration = parse_duration(firstpart)
+            duration = parse_duration(firstpart, relative=relative)
             enddatetime = parse_datetime(secondpart, delimiter=datetimedelimiter)
 
             return (enddatetime, enddatetime - duration)
         else:
             #<end> must just be a date
-            duration = parse_duration(firstpart)
+            duration = parse_duration(firstpart, relative=relative)
             enddate = parse_date(secondpart)
 
             #See if we need to upconvert to datetime to preserve resolution
@@ -61,13 +61,13 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
         #We need to figure out if <start> is a date, or a datetime
         if firstpart.find(datetimedelimiter) != -1:
             #<end> is a datetime
-            duration = parse_duration(secondpart)
+            duration = parse_duration(secondpart, relative=relative)
             startdatetime = parse_datetime(firstpart, delimiter=datetimedelimiter)
 
             return (startdatetime, startdatetime + duration)
         else:
             #<start> must just be a date
-            duration = parse_duration(secondpart)
+            duration = parse_duration(secondpart, relative=relative)
             startdate = parse_date(firstpart)
 
             #See if we need to upconvert to datetime to preserve resolution
@@ -90,7 +90,7 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T')
             #Both parts are dates
             return (parse_date(firstpart), parse_date(secondpart))
 
-def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T'):
+def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T', relative=False):
     #Given a string representing an ISO8601 interval repating, return a
     #generator of datetime.date or date.datetime objects representing the
     #dates specified by the repeating interval. Valid formats are:
@@ -109,7 +109,7 @@ def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedeli
     else:
         iterations = None
 
-    interval = parse_interval(intervalpart, intervaldelimiter, datetimedelimiter)
+    interval = parse_interval(intervalpart, intervaldelimiter, datetimedelimiter, relative=relative)
 
     intervaltimedelta = interval[1] - interval[0]
 
