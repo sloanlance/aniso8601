@@ -10,7 +10,6 @@ Features
 ========
 * Pure Python implementation
 * Python 3 support
-* No extra dependencies
 * Logical behavior
 
  - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
