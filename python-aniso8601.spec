@@ -12,7 +12,7 @@
 %global tarball_name aniso8601
 
 Name:           python-aniso8601
-Version:        1.0.1dev
+Version:        1.1.0
 Release:        1%{?dist}
 Summary:        Python 2 library for parsing ISO 8601 strings
 
@@ -22,9 +22,9 @@ URL:            https://bitbucket.org/nielsenb/aniso8601
 Source0:        https://pypi.python.org/packages/source/a/aniso8601/%{tarball_name}-%{version}.tar.gz
 
 BuildArch:      noarch
-BuildRequires:  python2-devel python-setuptools
+BuildRequires:  python2-devel python-setuptools python-dateutil
 %if 0%{?with_python3}
-BuildRequires:  python3-devel python3-setuptools
+BuildRequires:  python3-devel python3-setuptools python3-dateutil
 %endif
 
 %description
