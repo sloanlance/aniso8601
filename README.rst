@@ -163,7 +163,7 @@ The above treat years as 365 days and months as 30 days. If calendar level accur
   >>> date(2003,1,31) + two_months
   datetime.date(2003, 3, 31)
 
-Since it a relative fractional month or year is not logical. A ValueError is raised when attempting to parse a duration with :code:`relative=True` and fractional month or year::
+Since a relative fractional month or year is not logical, a ValueError is raised when attempting to parse a duration with :code:`relative=True` and fractional month or year::
 
   >>> aniso8601.parse_duration('P2.1Y', relative=True)
   Traceback (most recent call last):
