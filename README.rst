@@ -12,12 +12,12 @@ Features
 * Python 3 support
 * Logical behavior
 
- - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
- - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
- - Parse a datetime, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
- - Parse a duration, get a `datetime.timedelta <http://docs.python.org/2/library/datetime.html#datetime.timedelta>`_
- - Parse an interval, get a tuple of dates or datetimes
- - Parse a repeating interval, get a date or datetime `generator <http://www.python.org/dev/peps/pep-0255/>`_
+  - Parse a time, get a `datetime.time <http://docs.python.org/2/library/datetime.html#datetime.time>`_
+  - Parse a date, get a `datetime.date <http://docs.python.org/2/library/datetime.html#datetime.date>`_
+  - Parse a datetime, get a `datetime.datetime <http://docs.python.org/2/library/datetime.html#datetime.datetime>`_
+  - Parse a duration, get a `datetime.timedelta <http://docs.python.org/2/library/datetime.html#datetime.timedelta>`_
+  - Parse an interval, get a tuple of dates or datetimes
+  - Parse a repeating interval, get a date or datetime `generator <http://www.python.org/dev/peps/pep-0255/>`_
 
 * UTC offset represented as fixed-offset tzinfo
 * `dateutil.relativedelta <http://dateutil.readthedocs.org/en/latest/relativedelta.html>`_ available for calendar accuracy
