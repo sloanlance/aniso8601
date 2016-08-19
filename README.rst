@@ -20,7 +20,7 @@ Features
   - Parse a repeating interval, get a date or datetime `generator <http://www.python.org/dev/peps/pep-0255/>`_
 
 * UTC offset represented as fixed-offset tzinfo
-* `dateutil.relativedelta <http://dateutil.readthedocs.org/en/latest/relativedelta.html>`_ available for calendar accuracy
+* `dateutil.relativedelta <http://dateutil.readthedocs.io/en/latest/relativedelta.html>`_ available for calendar accuracy
 * No regular expressions
 
 Installation
