@@ -60,6 +60,9 @@ def _parse_duration_prescribed(durationstr, relative):
         if _has_any_component(durationstr, ['H', 'S']):
             raise ValueError('Time components not allowed in duration without prescribed time.')
 
+        if _component_order_correct(durationstr, ['P', 'Y', 'M', 'D', 'W']) is False:
+            raise ValueError('Duration components must be in the correct order.')
+
         if durationstr.find('Y') != -1:
             years = _parse_duration_element(durationstr, 'Y')
         else:
@@ -93,9 +96,15 @@ def _parse_duration_prescribed(durationstr, relative):
         if _has_any_component(firsthalf, ['H', 'S']):
             raise ValueError('Time components not allowed in date portion of duration.')
 
+        if _component_order_correct(firsthalf, ['P', 'Y', 'M', 'D', 'W']) is False:
+            raise ValueError('Duration components must be in the correct order.')
+
         #Make sure no date component is included in the time half
         if _has_any_component(secondhalf, ['Y', 'D']):
             raise ValueError('Time components not allowed in date portion of duration.')
+
+        if _component_order_correct(secondhalf, ['T', 'H', 'M', 'S']) is False:
+            raise ValueError('Time components in duration must be in the correct order.')
 
         if firsthalf.find('Y') != -1:
             years = _parse_duration_element(firsthalf, 'Y')
@@ -204,3 +213,42 @@ def _has_any_component(durationstr, components):
             return True
 
     return False
+
+def _component_order_correct(durationstr, componentorder):
+    #Given a duration string, and a list of components, returns
+    #True if the components are in the same order as the
+    #component order list, False otherwise. Characters that
+    #are present in the component order list but not in the
+    #duration string are ignored.
+    #
+    #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
+    #
+    #durationstr = 'P1Y1M1D'
+    #components = ['P', 'Y', 'M', 'D']
+    #
+    #returns True
+    #
+    #durationstr = 'P1Y1M'
+    #components = ['P', 'Y', 'M', 'D']
+    #
+    #returns True
+    #
+    #durationstr = 'P1D1Y1M'
+    #components = ['P', 'Y', 'M', 'D']
+    #
+    #returns False
+
+    componentindex = 0
+
+    for characterindex in compat.range(len(durationstr)):
+        character = durationstr[characterindex]
+
+        if character in componentorder:
+            #This is a character we need to check the order of
+            if character in componentorder[componentindex:]:
+                componentindex = componentorder.index(character)
+            else:
+                #A character is out of order
+                return False
+
+    return True

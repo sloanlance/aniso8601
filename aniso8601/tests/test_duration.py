@@ -8,7 +8,7 @@
 
 import unittest
 
-from aniso8601.duration import parse_duration, _parse_duration_prescribed, _parse_duration_combined, _parse_duration_element, _has_any_component
+from aniso8601.duration import parse_duration, _parse_duration_prescribed, _parse_duration_combined, _parse_duration_element, _has_any_component, _component_order_correct
 
 class TestDurationFunctions(unittest.TestCase):
     def test_parse_duration(self):
@@ -23,6 +23,7 @@ class TestDurationFunctions(unittest.TestCase):
 
         #Ensure durations are required to be in the correct order
         #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
         with self.assertRaises(ValueError):
             parse_duration('P1S')
 
@@ -36,13 +37,19 @@ class TestDurationFunctions(unittest.TestCase):
             parse_duration('1Y2M3D1SPT1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('1Y2M3D2MPT1S')
+            parse_duration('P1Y2M3D2MT1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('2M3D1SPT1Y1M')
+            parse_duration('P2M3D1ST1Y1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('1Y2M2MPT3D1S')
+            parse_duration('P1Y2M2MT3D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('PT1S1H')
 
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
@@ -163,6 +170,7 @@ class TestDurationFunctions(unittest.TestCase):
 
         #Ensure durations are required to be in the correct order
         #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
         with self.assertRaises(ValueError):
             parse_duration('P1S')
 
@@ -176,13 +184,19 @@ class TestDurationFunctions(unittest.TestCase):
             parse_duration('1Y2M3D1SPT1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('1Y2M3D2MPT1S')
+            parse_duration('P1Y2M3D2MT1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('2M3D1SPT1Y1M')
+            parse_duration('P2M3D1ST1Y1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('1Y2M2MPT3D1S')
+            parse_duration('P1Y2M2MT3D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('PT1S1H')
 
         resultduration = _parse_duration_prescribed('P1Y2M3DT4H54M6S', False)
         self.assertEqual(resultduration.days, 428)
@@ -273,6 +287,36 @@ class TestDurationFunctions(unittest.TestCase):
             #Fraction only allowed on final component
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', True)
 
+        #Ensure durations are required to be in the correct order
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
+        with self.assertRaises(ValueError):
+            parse_duration('P1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1H1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D1SPT1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M3D2MT1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P2M3D1ST1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M2MT3D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('PT1S1H')
+
         #Fractional months and years are not defined
         #https://github.com/dateutil/dateutil/issues/40
         with self.assertRaises(ValueError):
@@ -338,3 +382,9 @@ class TestDurationFunctions(unittest.TestCase):
     def test_has_any_component(self):
         self.assertTrue(_has_any_component('P1Y', ['Y', 'M']))
         self.assertFalse(_has_any_component('P1Y', ['M', 'D']))
+
+    def test_component_order_correct(self):
+        self.assertTrue(_component_order_correct('P1Y1M1D', ['P', 'Y', 'M', 'D']))
+        self.assertTrue(_component_order_correct('P1Y1M', ['P', 'Y', 'M', 'D']))
+        self.assertFalse(_component_order_correct('P1D1Y1M', ['P', 'Y', 'M', 'D']))
+        self.assertFalse(_component_order_correct('PT1S1H', ['T', 'H', 'M', 'S']))
