@@ -12,6 +12,10 @@ from aniso8601.duration import parse_duration, _parse_duration_prescribed, _pars
 
 class TestDurationFunctions(unittest.TestCase):
     def test_parse_duration(self):
+        with self.assertRaises(ValueError):
+            #Duration must start with a P
+            parse_duration('1Y2M3DT4H54M6S', False)
+
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
@@ -122,9 +126,11 @@ class TestDurationFunctions(unittest.TestCase):
 
     def test_parse_duration_prescribed(self):
         with self.assertRaises(ValueError):
+            #Multiple fractions are not allowed
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S', False)
 
         with self.assertRaises(ValueError):
+            #Fraction only allowed on final component
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', False)
 
         resultduration = _parse_duration_prescribed('P1Y2M3DT4H54M6S', False)
@@ -209,9 +215,11 @@ class TestDurationFunctions(unittest.TestCase):
 
     def test_parse_duration_prescribed_relative(self):
         with self.assertRaises(ValueError):
+            #Multiple fractions are not allowed
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S', True)
 
         with self.assertRaises(ValueError):
+            #Fraction only allowed on final component
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', True)
 
         #Fractional months and years are not defined
