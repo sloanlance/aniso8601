@@ -161,6 +161,29 @@ class TestDurationFunctions(unittest.TestCase):
             #Fraction only allowed on final component
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', False)
 
+        #Ensure durations are required to be in the correct order
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        with self.assertRaises(ValueError):
+            parse_duration('P1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1H1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D1SPT1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D2MPT1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('2M3D1SPT1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M2MPT3D1S')
+
         resultduration = _parse_duration_prescribed('P1Y2M3DT4H54M6S', False)
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
