@@ -8,7 +8,7 @@
 
 import unittest
 
-from aniso8601.duration import parse_duration, _parse_duration_prescribed, _parse_duration_combined, _parse_duration_element
+from aniso8601.duration import parse_duration, _parse_duration_prescribed, _parse_duration_combined, _parse_duration_element, _has_any_component
 
 class TestDurationFunctions(unittest.TestCase):
     def test_parse_duration(self):
@@ -288,3 +288,7 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'H'), 4)
         self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'M'), 54)
         self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'S'), 6.5)
+
+    def test_has_any_component(self):
+        self.assertTrue(_has_any_component('P1Y', ['Y', 'M']))
+        self.assertFalse(_has_any_component('P1Y', ['M', 'D']))

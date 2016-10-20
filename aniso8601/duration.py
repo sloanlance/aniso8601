@@ -24,8 +24,8 @@ def parse_duration(isodurationstr, relative=False):
     if isodurationstr[0] != 'P':
         raise ValueError('String is not a valid ISO8601 duration.')
 
-    #If Y, M, D, H, or S are in the string, assume it is a specified duration
-    if isodurationstr.find('Y') != -1 or isodurationstr.find('M') != -1 or isodurationstr.find('W') != -1 or isodurationstr.find('D') != -1 or isodurationstr.find('H') != -1 or isodurationstr.find('S') != -1:
+    #If Y, M, D, H, S, or W are in the string, assume it is a specified duration
+    if _has_any_component(isodurationstr, ['Y', 'M', 'D', 'H', 'S', 'W']) is True:
         return _parse_duration_prescribed(isodurationstr, relative)
     else:
         return _parse_duration_combined(isodurationstr, relative)
@@ -50,7 +50,7 @@ def _parse_duration_prescribed(durationstr, relative):
 
     #Do not allow W in combination with other designators
     #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
-    if durationstr.find('W') != -1 and (durationstr.find('Y') != -1 or durationstr.find('M') != -1 or durationstr.find('D') != -1 or durationstr.find('H') != -1 or durationstr.find('M') != -1 or durationstr.find('S') != -1):
+    if durationstr.find('W') != -1 and _has_any_component(durationstr, ['Y', 'M', 'D', 'H', 'S']) is True:
         raise ValueError('Week designator may not be combined with other time designators.')
 
     #Parse the elements of the duration
@@ -171,3 +171,23 @@ def _parse_duration_element(durationstr, elementstr):
         durationstr = durationstr.replace(',', '.')
 
     return float(durationstr[durationstartindex:durationendindex])
+
+def _has_any_component(durationstr, components):
+    #Given a duration string, and a list of components, returns True
+    #if any of the listed components are present, False otherwise.
+    #
+    #For instance:
+    #durationstr = 'P1Y'
+    #components = ['Y', 'M']
+    #
+    #returns True
+    #
+    #durationstr = 'P1Y'
+    #components = ['M', 'D']
+    #
+    #returns False
+    for component in components:
+        if durationstr.find(component) != -1:
+            return True
+
+    return False
