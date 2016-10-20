@@ -55,6 +55,11 @@ def _parse_duration_prescribed(durationstr, relative):
 
     #Parse the elements of the duration
     if durationstr.find('T') == -1:
+        #Make sure no time portion is included
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        if _has_any_component(durationstr, ['H', 'S']):
+            raise ValueError('Time components not allowed in duration without prescribed time.')
+
         if durationstr.find('Y') != -1:
             years = _parse_duration_element(durationstr, 'Y')
         else:
@@ -83,7 +88,16 @@ def _parse_duration_prescribed(durationstr, relative):
         firsthalf = durationstr[:durationstr.find('T')]
         secondhalf = durationstr[durationstr.find('T'):]
 
-        if  firsthalf.find('Y') != -1:
+        #Make sure no time portion is included in the date half
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        if _has_any_component(firsthalf, ['H', 'S']):
+            raise ValueError('Time components not allowed in date portion of duration.')
+
+        #Make sure no date component is included in the time half
+        if _has_any_component(secondhalf, ['Y', 'D']):
+            raise ValueError('Time components not allowed in date portion of duration.')
+
+        if firsthalf.find('Y') != -1:
             years = _parse_duration_element(firsthalf, 'Y')
         else:
             years = 0

@@ -21,6 +21,29 @@ class TestDurationFunctions(unittest.TestCase):
             #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
             parse_duration('P1Y2W')
 
+        #Ensure durations are required to be in the correct order
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        with self.assertRaises(ValueError):
+            parse_duration('P1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1H1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D1SPT1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D2MPT1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('2M3D1SPT1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M2MPT3D1S')
+
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
