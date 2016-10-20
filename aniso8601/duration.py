@@ -186,6 +186,7 @@ def _has_any_component(durationstr, components):
     #components = ['M', 'D']
     #
     #returns False
+
     for component in components:
         if durationstr.find(component) != -1:
             return True
