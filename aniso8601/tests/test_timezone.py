@@ -12,7 +12,7 @@ import pickle
 
 from aniso8601.timezone import parse_timezone, build_utcoffset
 
-class TestTimezoneFunctions(unittest.TestCase):
+class TestTimezoneParserFunctions(unittest.TestCase):
     def test_parse_timezone(self):
         tzinfoobject = parse_timezone('+00:00')
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
@@ -38,9 +38,6 @@ class TestTimezoneFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1, minutes=23))
         self.assertEqual(tzinfoobject.tzname(None), '-01:23')
 
-        with self.assertRaises(ValueError):
-            parse_timezone('-00:00')
-
         tzinfoobject = parse_timezone('+0000')
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+0000')
@@ -65,9 +62,6 @@ class TestTimezoneFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=1, minutes=23))
         self.assertEqual(tzinfoobject.tzname(None), '-0123')
 
-        with self.assertRaises(ValueError):
-            parse_timezone('-0000')
-
         tzinfoobject = parse_timezone('+00')
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+00')
@@ -87,6 +81,14 @@ class TestTimezoneFunctions(unittest.TestCase):
         tzinfoobject = parse_timezone('-12')
         self.assertEqual(tzinfoobject.utcoffset(None), -datetime.timedelta(hours=12))
         self.assertEqual(tzinfoobject.tzname(None), '-12')
+
+    def test_parse_timezone_negativezero(self):
+        #A 0 offset cannot be negative
+        with self.assertRaises(ValueError):
+            parse_timezone('-00:00')
+
+        with self.assertRaises(ValueError):
+            parse_timezone('-0000')
 
         with self.assertRaises(ValueError):
             parse_timezone('-00')
@@ -139,6 +141,7 @@ class TestTimezoneFunctions(unittest.TestCase):
 
     def test_datetime_tzinfo_dst(self):
         tzinfoobject = parse_timezone('+04:00')
-        datetime.datetime.now(tzinfoobject)
-        # Will raise ValueError or a TypeError if dst info is invalid
-        assert True
+        #This would raise ValueError or a TypeError if dst info is invalid
+        result = datetime.datetime.now(tzinfoobject)
+        #Hacky way to make sure the tzinfo is what we'd expect
+        self.assertEqual(str(result.tzinfo), '+4:00:00 UTC')
