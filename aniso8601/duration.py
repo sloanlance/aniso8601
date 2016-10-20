@@ -33,6 +33,11 @@ def parse_duration(isodurationstr, relative=False):
 def _parse_duration_prescribed(durationstr, relative):
     #durationstr can be of the form PnYnMnDTnHnMnS or PnW
 
+    #Make sure the end character is valid
+    #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+    if durationstr[-1] not in ['Y', 'M', 'D', 'H', 'S', 'W']:
+        raise ValueError('Duration does not end with a valid character.')
+
     #Make sure only the lowest order element has decimal precision
     if durationstr.count('.') > 1:
         raise ValueError('String is not a valid ISO8601 duration.')

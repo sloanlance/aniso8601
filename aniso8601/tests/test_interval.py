@@ -13,6 +13,20 @@ from aniso8601.interval import parse_interval, parse_repeating_interval
 
 class TestIntervalFunctions(unittest.TestCase):
     def test_parse_interval(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_interval('2001/P1Dasdf')
+
+        with self.assertRaises(ValueError):
+            parse_interval('P1Dasdf/2001')
+
+        with self.assertRaises(ValueError):
+            parse_interval('2001/P0003-06-04T12:30:05.5asdfasdf')
+
+        with self.assertRaises(ValueError):
+            parse_interval('P0003-06-04T12:30:05.5asdfasdf/2001')
+
         resultinterval = parse_interval('P1M/1981-04-05T01:01:00')
         self.assertEqual(resultinterval[0], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=3, day=6, hour=1, minute=1))
@@ -74,6 +88,21 @@ class TestIntervalFunctions(unittest.TestCase):
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
 
     def test_parse_interval_relative(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_interval('2001/P1Dasdf', relative=True)
+
+        with self.assertRaises(ValueError):
+            parse_interval('P1Dasdf/2001', relative=True)
+
+        with self.assertRaises(ValueError):
+            parse_interval('2001/P0003-06-04T12:30:05.5asdfasdf', relative=True)
+
+        with self.assertRaises(ValueError):
+            parse_interval('P0003-06-04T12:30:05.5asdfasdf/2001', relative=True)
+
+
         resultinterval = parse_interval('P1M/1981-04-05T01:01:00', relative=True)
         self.assertEqual(resultinterval[0], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=3, day=5, hour=1, minute=1))
@@ -169,6 +198,14 @@ class TestIntervalFunctions(unittest.TestCase):
         self.assertEqual(resultinterval[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
 
     def test_parse_repeating_interval(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_interval('R3/1981-04-05/P1Dasdf')
+
+        with self.assertRaises(ValueError):
+            parse_interval('R3/1981-04-05/P0003-06-04T12:30:05.5asdfasdf')
+
         results = list(parse_repeating_interval('R3/1981-04-05/P1D'))
         self.assertEqual(results[0], datetime.date(year=1981, month=4, day=5))
         self.assertEqual(results[1], datetime.date(year=1981, month=4, day=6))
@@ -193,6 +230,14 @@ class TestIntervalFunctions(unittest.TestCase):
              self.assertEqual(next(resultgenerator), datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1) - dateindex * datetime.timedelta(hours=1, minutes=2))
 
     def test_parse_repeating_interval_relative(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_interval('R3/1981-04-05/P1Dasdf', relative=True)
+
+        with self.assertRaises(ValueError):
+            parse_interval('R3/1981-04-05/P0003-06-04T12:30:05.5asdfasdf')
+
         results = list(parse_repeating_interval('R3/1981-04-05/P1D', relative=True))
         self.assertEqual(results[0], datetime.date(year=1981, month=4, day=5))
         self.assertEqual(results[1], datetime.date(year=1981, month=4, day=6))
