@@ -10,7 +10,7 @@ import unittest
 
 from aniso8601.duration import parse_duration, _parse_duration_prescribed, _parse_duration_combined, _parse_duration_element, _has_any_component, _component_order_correct
 
-class TestDurationFunctions(unittest.TestCase):
+class TestDurationParserFunctions(unittest.TestCase):
     def test_parse_duration(self):
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
@@ -153,24 +153,6 @@ class TestDurationFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_duration('P0003-06-04T12:30:05.5asdfasdf')
 
-    def test_parse_duration_relative(self):
-        resultduration = parse_duration('P1Y2M3DT4H54M6.5S', relative=True)
-        self.assertEqual(resultduration.years, 1)
-        self.assertEqual(resultduration.months, 2)
-        self.assertEqual(resultduration.days, 3)
-        self.assertEqual(resultduration.hours, 4)
-        self.assertEqual(resultduration.minutes, 54)
-        self.assertEqual(resultduration.seconds, 6.5)
-
-        resultduration = parse_duration('P0003-06-04T12:30:05.5', relative=True)
-        self.assertEqual(resultduration.years, 3)
-        self.assertEqual(resultduration.months, 6)
-        self.assertEqual(resultduration.days, 4)
-        self.assertEqual(resultduration.hours, 12)
-        self.assertEqual(resultduration.minutes, 30)
-        self.assertEqual(resultduration.seconds, 5)
-        self.assertEqual(resultduration.microseconds, 500000)
-
     def test_parse_duration_prescribed(self):
         resultduration = _parse_duration_prescribed('P1Y2M3DT4H54M6S', False)
         self.assertEqual(resultduration.days, 428)
@@ -250,7 +232,7 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.seconds, 43200)
 
         #Verify overflows
-        self.assertEqual(parse_duration('PT36H', False), parse_duration('P1DT12H', False))
+        self.assertEqual(parse_duration('PT36H'), parse_duration('P1DT12H'))
 
     def test_parse_duration_prescribed_multiplefractions(self):
         with self.assertRaises(ValueError):
@@ -267,37 +249,94 @@ class TestDurationFunctions(unittest.TestCase):
         #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
         #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
         with self.assertRaises(ValueError):
-            parse_duration('P1S', False)
+            parse_duration('P1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('P1D1S', False)
+            parse_duration('P1D1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('P1H1M', False)
+            parse_duration('P1H1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('1Y2M3D1SPT1M', False)
+            parse_duration('1Y2M3D1SPT1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('P1Y2M3D2MT1S', False)
+            parse_duration('P1Y2M3D2MT1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('P2M3D1ST1Y1M', False)
+            parse_duration('P2M3D1ST1Y1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('P1Y2M2MT3D1S', False)
+            parse_duration('P1Y2M2MT3D1S')
 
         with self.assertRaises(ValueError):
-            parse_duration('P1D1Y1M', False)
+            parse_duration('P1D1Y1M')
 
         with self.assertRaises(ValueError):
-            parse_duration('PT1S1H', False)
+            parse_duration('PT1S1H')
 
     def test_parse_duration_prescribed_suffixgarbage(self):
         #Don't allow garbage after the duration
         #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
         with self.assertRaises(ValueError):
-            parse_duration('P1Dasdfasdf', False)
+            parse_duration('P1Dasdfasdf')
+
+    def test_parse_duration_combined(self):
+        resultduration = _parse_duration_combined('P0003-06-04T12:30:05', False)
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 0)
+
+        resultduration = _parse_duration_combined('P0003-06-04T12:30:05.5', False)
+        self.assertEqual(resultduration.days, 1279)
+        self.assertEqual(resultduration.seconds, 45005)
+        self.assertEqual(resultduration.microseconds, 500000)
+
+    def test_parse_duration_combined_suffixgarbage(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_duration('P0003-06-04T12:30:05.5asdfasdf')
+
+    def test_parse_duration_element(self):
+        self.assertEqual(_parse_duration_element('P1Y2M3D', 'Y'), 1)
+        self.assertEqual(_parse_duration_element('P1Y2M3D', 'M'), 2)
+        self.assertEqual(_parse_duration_element('P1Y2M3D', 'D'), 3)
+        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'H'), 4)
+        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'M'), 5)
+        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'S'), 6.1234)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'H'), 4)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'M'), 54)
+        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'S'), 6.5)
+
+    def test_has_any_component(self):
+        self.assertTrue(_has_any_component('P1Y', ['Y', 'M']))
+        self.assertFalse(_has_any_component('P1Y', ['M', 'D']))
+
+    def test_component_order_correct(self):
+        self.assertTrue(_component_order_correct('P1Y1M1D', ['P', 'Y', 'M', 'D']))
+        self.assertTrue(_component_order_correct('P1Y1M', ['P', 'Y', 'M', 'D']))
+        self.assertFalse(_component_order_correct('P1D1Y1M', ['P', 'Y', 'M', 'D']))
+        self.assertFalse(_component_order_correct('PT1S1H', ['T', 'H', 'M', 'S']))
+
+class TestRelativeDurationParserFunctions(unittest.TestCase):
+    def test_parse_duration_relative(self):
+        resultduration = parse_duration('P1Y2M3DT4H54M6.5S', relative=True)
+        self.assertEqual(resultduration.years, 1)
+        self.assertEqual(resultduration.months, 2)
+        self.assertEqual(resultduration.days, 3)
+        self.assertEqual(resultduration.hours, 4)
+        self.assertEqual(resultduration.minutes, 54)
+        self.assertEqual(resultduration.seconds, 6.5)
+
+        resultduration = parse_duration('P0003-06-04T12:30:05.5', relative=True)
+        self.assertEqual(resultduration.years, 3)
+        self.assertEqual(resultduration.months, 6)
+        self.assertEqual(resultduration.days, 4)
+        self.assertEqual(resultduration.hours, 12)
+        self.assertEqual(resultduration.minutes, 30)
+        self.assertEqual(resultduration.seconds, 5)
+        self.assertEqual(resultduration.microseconds, 500000)
 
     def test_parse_duration_prescribed_relative(self):
         resultduration = _parse_duration_prescribed('P1Y', True)
@@ -373,23 +412,6 @@ class TestDurationFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             _parse_duration_prescribed('P1.5M', True)
 
-    def test_parse_duration_combined(self):
-        resultduration = _parse_duration_combined('P0003-06-04T12:30:05', False)
-        self.assertEqual(resultduration.days, 1279)
-        self.assertEqual(resultduration.seconds, 45005)
-        self.assertEqual(resultduration.microseconds, 0)
-
-        resultduration = _parse_duration_combined('P0003-06-04T12:30:05.5', False)
-        self.assertEqual(resultduration.days, 1279)
-        self.assertEqual(resultduration.seconds, 45005)
-        self.assertEqual(resultduration.microseconds, 500000)
-
-    def test_parse_duration_combined_suffixgarbage(self):
-        #Don't allow garbage after the duration
-        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
-        with self.assertRaises(ValueError):
-            parse_duration('P0003-06-04T12:30:05.5asdfasdf', True)
-
     def test_parse_duration_combined_relative(self):
         resultduration = _parse_duration_combined('P0003-06-04T12:30:05', True)
         self.assertEqual(resultduration.years, 3)
@@ -413,24 +435,3 @@ class TestDurationFunctions(unittest.TestCase):
         #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
         with self.assertRaises(ValueError):
             parse_duration('P0003-06-04T12:30:05.5asdfasdf', True)
-
-    def test_parse_duration_element(self):
-        self.assertEqual(_parse_duration_element('P1Y2M3D', 'Y'), 1)
-        self.assertEqual(_parse_duration_element('P1Y2M3D', 'M'), 2)
-        self.assertEqual(_parse_duration_element('P1Y2M3D', 'D'), 3)
-        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'H'), 4)
-        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'M'), 5)
-        self.assertEqual(_parse_duration_element('T4H5M6.1234S', 'S'), 6.1234)
-        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'H'), 4)
-        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'M'), 54)
-        self.assertEqual(_parse_duration_element('PT4H54M6,5S', 'S'), 6.5)
-
-    def test_has_any_component(self):
-        self.assertTrue(_has_any_component('P1Y', ['Y', 'M']))
-        self.assertFalse(_has_any_component('P1Y', ['M', 'D']))
-
-    def test_component_order_correct(self):
-        self.assertTrue(_component_order_correct('P1Y1M1D', ['P', 'Y', 'M', 'D']))
-        self.assertTrue(_component_order_correct('P1Y1M', ['P', 'Y', 'M', 'D']))
-        self.assertFalse(_component_order_correct('P1D1Y1M', ['P', 'Y', 'M', 'D']))
-        self.assertFalse(_component_order_correct('PT1S1H', ['T', 'H', 'M', 'S']))
