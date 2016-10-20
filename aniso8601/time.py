@@ -68,10 +68,10 @@ def get_time_resolution(isotimestr):
         #hh
         return TimeResolution.Hours
     else:
-        raise ValueError('String is not a valid ISO8601 time.')
+        raise ValueError('String is not a valid ISO 8601 time.')
 
 def parse_time(isotimestr):
-    #Given a string in any ISO8601 time format, return a datetime.time object
+    #Given a string in any ISO 8601 time format, return a datetime.time object
     #that corresponds to the given time. Fixed offset tzdata will be included
     #if UTC offset is given in the input string. Valid time formats are:
     #
@@ -111,9 +111,9 @@ def parse_time(isotimestr):
         return _parse_time_naive(timestr).replace(tzinfo=parse_timezone(tzstr))
 
 def parse_datetime(isodatetimestr, delimiter='T'):
-    #Given a string in ISO8601 date time format, return a datetime.datetime
+    #Given a string in ISO 8601 date time format, return a datetime.datetime
     #object that corresponds to the given date time.
-    #By default, the ISO8601 specified T delimiter is used to split the
+    #By default, the ISO 8601 specified T delimiter is used to split the
     #date and time (<date>T<time>). Fixed offset tzdata will be included
     #if UTC offset is given in the input string.
 
@@ -162,7 +162,7 @@ def _parse_minute_time(timestr):
         isominute = float(timestr[2:])
 
     if isominute > 60:
-        raise ValueError('String is not a valid ISO8601 time.')
+        raise ValueError('ISO 8601 minute element cannot be greater than 60.')
 
     if isohour == 24:
         return datetime.time(hour=0, minute=0)
@@ -195,7 +195,7 @@ def _parse_second_time(timestr):
         secondsdelta = datetime.timedelta(seconds = float(timestr[4:]))
 
     if isominute > 60:
-        raise ValueError('String is not a valid ISO8601 time.')
+        raise ValueError('ISO 8601 minute element cannot be greater than 60.')
 
     if isohour == 24:
         return datetime.time(hour=0, minute=0)

@@ -24,11 +24,11 @@ def get_date_resolution(isodatestr):
     #YYYY-DDD
     #YYYYDDD
     if isodatestr.startswith('+') or isodatestr.startswith('-'):
-        raise NotImplementedError('ISO8601 extended year representation not supported.')
+        raise NotImplementedError('ISO 8601 extended year representation not supported.')
     isodatestrlen = len(isodatestr)
 
     if isodatestr.find('W') != -1:
-        #Handle ISO8601 week date format
+        #Handle ISO 8601 week date format
         hyphens_present = 1 if isodatestr.find('-') != -1 else 0
         week_date_len = 7 + hyphens_present
         weekday_date_len = 8 + 2*hyphens_present
@@ -41,7 +41,7 @@ def get_date_resolution(isodatestr):
             #YYYYWwwD
             return DateResolution.Weekday
         else:
-            raise ValueError('String is not a valid ISO8601 week date.')
+            raise ValueError('String is not a valid ISO 8601 week date.')
 
     #If the size of the string of 4 or less, assume its a truncated year representation
     if len(isodatestr) <= 4:
@@ -79,10 +79,10 @@ def get_date_resolution(isodatestr):
         return DateResolution.Ordinal
 
     #None of the date representations match
-    raise ValueError('String is not an ISO8601 date, perhaps it represents a time or datetime.')
+    raise ValueError('String is not an ISO 8601 date, perhaps it represents a time or datetime.')
 
 def parse_date(isodatestr):
-    #Given a string in any ISO8601 date format, return a datetime.date
+    #Given a string in any ISO 8601 date format, return a datetime.date
     #object that corresponds to the given date. Valid string formats are:
     #
     #Y[YYY]
@@ -96,7 +96,7 @@ def parse_date(isodatestr):
     #YYYY-DDD
     #YYYYDDD
     #
-    #Note that the ISO8601 date format of ±YYYYY is expressly not supported
+    #Note that the ISO 8601 date format of ±YYYYY is expressly not supported
     return _resolution_map[get_date_resolution(isodatestr)](isodatestr)
 
 def _parse_year(yearstr):
@@ -128,7 +128,7 @@ def _parse_calendar_day(datestr):
         #YYYYMMDD
         strformat = '%Y%m%d'
     else:
-        raise ValueError('String is not a valid ISO8601 calendar day.')
+        raise ValueError('String is not a valid ISO 8601 calendar day.')
 
     parseddatetime = datetime.datetime.strptime(datestr, strformat)
 
@@ -140,7 +140,7 @@ def _parse_calendar_month(datestr):
     datestrlen = len(datestr)
 
     if datestrlen != 7:
-        raise ValueError('String is not a valid ISO8601 calendar month.')
+        raise ValueError('String is not a valid ISO 8601 calendar month.')
 
     parseddatetime = datetime.datetime.strptime(datestr, '%Y-%m')
 
@@ -164,7 +164,7 @@ def _parse_week_day(datestr):
     isoweeknumber = int(datestr[windex + 1:windex + 3])
 
     if isoweeknumber == 0:
-        raise ValueError('00 is not a valid ISO8601 weeknumber.')
+        raise ValueError('00 is not a valid ISO 8601 weeknumber.')
 
     datestrlen = len(datestr)
 
@@ -175,7 +175,7 @@ def _parse_week_day(datestr):
 
             return gregorianyearstart + datetime.timedelta(weeks=isoweeknumber - 1, days=isoday - 1)
         else:
-            raise ValueError('String is not a valid ISO8601 week date.')
+            raise ValueError('String is not a valid ISO 8601 week date.')
     else:
         if datestrlen == 8:
             #YYYYWwwD
@@ -183,7 +183,7 @@ def _parse_week_day(datestr):
 
             return gregorianyearstart + datetime.timedelta(weeks=isoweeknumber - 1, days=isoday - 1)
         else:
-            raise ValueError('String is not a valid ISO8601 week date.')
+            raise ValueError('String is not a valid ISO 8601 week date.')
 
 def _parse_week(datestr):
     #datestr is of the format YYYY-Www, YYYYWww
@@ -199,7 +199,7 @@ def _parse_week(datestr):
     isoweeknumber = int(datestr[windex + 1:windex + 3])
 
     if isoweeknumber == 0:
-        raise ValueError('00 is not a valid ISO8601 weeknumber.')
+        raise ValueError('00 is not a valid ISO 8601 weeknumber.')
 
     datestrlen = len(datestr)
 
@@ -209,13 +209,13 @@ def _parse_week(datestr):
             #Suss out the date
             return gregorianyearstart + datetime.timedelta(weeks=isoweeknumber - 1, days=0)
         else:
-            raise ValueError('String is not a valid ISO8601 week date.')
+            raise ValueError('String is not a valid ISO 8601 week date.')
     else:
         if datestrlen == 7:
             #YYYYWww
             return gregorianyearstart + datetime.timedelta(weeks=isoweeknumber - 1, days=0)
         else:
-            raise ValueError('String is not a valid ISO8601 week date.')
+            raise ValueError('String is not a valid ISO 8601 week date.')
 
 def _parse_ordinal_date(datestr):
     #datestr is of the format YYYY-DDD or YYYYDDD

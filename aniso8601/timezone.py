@@ -22,7 +22,7 @@ def parse_timezone(tzstr):
             return build_utcoffset(tzstr, datetime.timedelta(hours=tzhour, minutes=tzminute))
         else:
             if tzhour == 0 and tzminute == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
+                raise ValueError('Negative ISO 8601 time offset cannot be 0.')
             else:
                 return build_utcoffset(tzstr, -datetime.timedelta(hours=tzhour, minutes=tzminute))
     elif tzstrlen == 5:
@@ -34,7 +34,7 @@ def parse_timezone(tzstr):
             return build_utcoffset(tzstr, datetime.timedelta(hours=tzhour, minutes=tzminute))
         else:
             if tzhour == 0 and tzminute == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
+                raise ValueError('Negative ISO 8601 time offset cannot be 0.')
             else:
                 return build_utcoffset(tzstr, -datetime.timedelta(hours=tzhour, minutes=tzminute))
     elif tzstrlen == 3:
@@ -45,11 +45,11 @@ def parse_timezone(tzstr):
             return build_utcoffset(tzstr, datetime.timedelta(hours=tzhour))
         else:
             if tzhour == 0:
-                raise ValueError('String is not a valid ISO8601 time offset.')
+                raise ValueError('Negative ISO 8601 time offset cannot be 0.')
             else:
                 return build_utcoffset(tzstr, -datetime.timedelta(hours=tzhour))
     else:
-        raise ValueError('String is not a valid ISO8601 time offset.')
+        raise ValueError('String is not a valid ISO 8601 time offset.')
 
 def build_utcoffset(name, utcdelta):
     #We build an offset in this manner since the
@@ -106,7 +106,7 @@ class UTCOffset(datetime.tzinfo):
         return self._name
 
     def dst(self, dt):
-        #ISO8601 specifies offsets should be different if DST is required,
+        #ISO 8601 specifies offsets should be different if DST is required,
         #instead of allowing for a DST to be specified
         # https://docs.python.org/2/library/datetime.html#datetime.tzinfo.dst
         return datetime.timedelta(0)

@@ -12,7 +12,7 @@ from aniso8601.time import parse_datetime
 from aniso8601.date import parse_date
 
 def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T', relative=False):
-    #Given a string representing an ISO8601 interval, return a
+    #Given a string representing an ISO 8601 interval, return a
     #tuple of datetime.date or date.datetime objects representing the beginning
     #and end of the specified interval. Valid formats are:
     #
@@ -91,7 +91,7 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T',
             return (parse_date(firstpart), parse_date(secondpart))
 
 def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T', relative=False):
-    #Given a string representing an ISO8601 interval repating, return a
+    #Given a string representing an ISO 8601 interval repating, return a
     #generator of datetime.date or date.datetime objects representing the
     #dates specified by the repeating interval. Valid formats are:
     #
@@ -99,7 +99,7 @@ def parse_repeating_interval(isointervalstr, intervaldelimiter='/', datetimedeli
     #R/<interval>
 
     if isointervalstr[0] != 'R':
-        raise ValueError('String is not a valid ISO8601 repeating interval.')
+        raise ValueError('ISO 8601 repeating interval must start with an R.')
 
     #Parse the number of iterations
     iterationpart, intervalpart = isointervalstr.split(intervaldelimiter, 1)
