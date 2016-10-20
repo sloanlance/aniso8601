@@ -93,11 +93,6 @@ def _parse_duration_prescribed(durationstr, relative):
         else:
             months = 0
 
-        if durationstr.find('W') != -1:
-            weeks = _parse_duration_element(durationstr, 'W')
-        else:
-            weeks = 0
-
         if firsthalf.find('D') != -1:
             days = _parse_duration_element(firsthalf, 'D')
         else:
@@ -117,6 +112,9 @@ def _parse_duration_prescribed(durationstr, relative):
             seconds = _parse_duration_element(secondhalf, 'S')
         else:
             seconds = 0
+
+        #Weeks can't be included
+        weeks = 0
 
     if relative == True:
         if int(years) != years or int(months) != months:
