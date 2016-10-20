@@ -48,6 +48,11 @@ def _parse_duration_prescribed(durationstr, relative):
             if lettercount > 1:
                 raise ValueError('String is not a valid ISO8601 duration.')
 
+    #Do not allow W in combination with other designators
+    #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
+    if durationstr.find('W') != -1 and (durationstr.find('Y') != -1 or durationstr.find('M') != -1 or durationstr.find('D') != -1 or durationstr.find('H') != -1 or durationstr.find('M') != -1 or durationstr.find('S') != -1):
+        raise ValueError('Week designator may not be combined with other time designators.')
+
     #Parse the elements of the duration
     if durationstr.find('T') == -1:
         if durationstr.find('Y') != -1:

@@ -16,6 +16,11 @@ class TestDurationFunctions(unittest.TestCase):
             #Duration must start with a P
             parse_duration('1Y2M3DT4H54M6S', False)
 
+        with self.assertRaises(ValueError):
+            #Week designator cannot be combined with other time designators
+            #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
+            parse_duration('P1Y2W')
+
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
