@@ -12,53 +12,6 @@ from aniso8601.duration import parse_duration, _parse_duration_prescribed, _pars
 
 class TestDurationFunctions(unittest.TestCase):
     def test_parse_duration(self):
-        with self.assertRaises(ValueError):
-            #Duration must start with a P
-            parse_duration('1Y2M3DT4H54M6S')
-
-        with self.assertRaises(ValueError):
-            #Week designator cannot be combined with other time designators
-            #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
-            parse_duration('P1Y2W')
-
-        #Ensure durations are required to be in the correct order
-        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
-        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
-        with self.assertRaises(ValueError):
-            parse_duration('P1S')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1D1S')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1H1M')
-
-        with self.assertRaises(ValueError):
-            parse_duration('1Y2M3D1SPT1M')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1Y2M3D2MT1S')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P2M3D1ST1Y1M')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1Y2M2MT3D1S')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1D1Y1M')
-
-        with self.assertRaises(ValueError):
-            parse_duration('PT1S1H')
-
-        #Don't allow garbage after the duration
-        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
-        with self.assertRaises(ValueError):
-            parse_duration('P1Dasdfasdf')
-
-        with self.assertRaises(ValueError):
-            parse_duration('P0003-06-04T12:30:05.5asdfasdf')
-
         resultduration = parse_duration('P1Y2M3DT4H54M6S')
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
@@ -149,6 +102,57 @@ class TestDurationFunctions(unittest.TestCase):
         #Verify overflows
         self.assertEqual(parse_duration('PT36H'), parse_duration('P1DT12H'))
 
+    def test_parse_duration_nop(self):
+        with self.assertRaises(ValueError):
+            #Duration must start with a P
+            parse_duration('1Y2M3DT4H54M6S')
+
+    def test_parse_duration_weekcombination(self):
+        with self.assertRaises(ValueError):
+            #Week designator cannot be combined with other time designators
+            #https://bitbucket.org/nielsenb/aniso8601/issues/2/week-designators-should-not-be-combinable
+            parse_duration('P1Y2W')
+
+    def test_parse_duration_outoforder(self):
+        #Ensure durations are required to be in the correct order
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
+        with self.assertRaises(ValueError):
+            parse_duration('P1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1H1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D1SPT1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M3D2MT1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P2M3D1ST1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M2MT3D1S')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1Y1M')
+
+        with self.assertRaises(ValueError):
+            parse_duration('PT1S1H')
+
+    def test_parse_duration_suffixgarbage(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_duration('P1Dasdfasdf')
+
+        with self.assertRaises(ValueError):
+            parse_duration('P0003-06-04T12:30:05.5asdfasdf')
+
     def test_parse_duration_relative(self):
         resultduration = parse_duration('P1Y2M3DT4H54M6.5S', relative=True)
         self.assertEqual(resultduration.years, 1)
@@ -168,49 +172,6 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.microseconds, 500000)
 
     def test_parse_duration_prescribed(self):
-        with self.assertRaises(ValueError):
-            #Multiple fractions are not allowed
-            _parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S', False)
-
-        with self.assertRaises(ValueError):
-            #Fraction only allowed on final component
-            _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', False)
-
-        #Ensure durations are required to be in the correct order
-        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
-        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
-        with self.assertRaises(ValueError):
-            parse_duration('P1S', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1D1S', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1H1M', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('1Y2M3D1SPT1M', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1Y2M3D2MT1S', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P2M3D1ST1Y1M', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1Y2M2MT3D1S', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('P1D1Y1M', False)
-
-        with self.assertRaises(ValueError):
-            parse_duration('PT1S1H', False)
-
-        #Don't allow garbage after the duration
-        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
-        with self.assertRaises(ValueError):
-            parse_duration('P1Dasdfasdf', False)
-
         resultduration = _parse_duration_prescribed('P1Y2M3DT4H54M6S', False)
         self.assertEqual(resultduration.days, 428)
         self.assertEqual(resultduration.seconds, 17646)
@@ -291,15 +252,79 @@ class TestDurationFunctions(unittest.TestCase):
         #Verify overflows
         self.assertEqual(parse_duration('PT36H', False), parse_duration('P1DT12H', False))
 
+    def test_parse_duration_prescribed_multiplefractions(self):
+        with self.assertRaises(ValueError):
+            #Multiple fractions are not allowed
+            _parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S', False)
+
+    def test_parse_duration_prescribed_middlefraction(self):
+        with self.assertRaises(ValueError):
+            #Fraction only allowed on final component
+            _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', False)
+
+    def test_parse_duration_prescribed_outoforder(self):
+        #Ensure durations are required to be in the correct order
+        #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
+        #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
+        with self.assertRaises(ValueError):
+            parse_duration('P1S', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1S', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1H1M', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('1Y2M3D1SPT1M', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M3D2MT1S', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P2M3D1ST1Y1M', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1Y2M2MT3D1S', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('P1D1Y1M', False)
+
+        with self.assertRaises(ValueError):
+            parse_duration('PT1S1H', False)
+
+    def test_parse_duration_prescribed_suffixgarbage(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_duration('P1Dasdfasdf', False)
+
     def test_parse_duration_prescribed_relative(self):
+        resultduration = _parse_duration_prescribed('P1Y', True)
+        self.assertEqual(resultduration.years, 1)
+
+        resultduration = _parse_duration_prescribed('P1M', True)
+        self.assertEqual(resultduration.months, 1)
+
+        #Add the relative ‘days’ argument to the absolute day. Notice that the ‘weeks’ argument is multiplied by 7 and added to ‘days’.
+        #http://dateutil.readthedocs.org/en/latest/relativedelta.html
+        resultduration = _parse_duration_prescribed('P1W', True)
+        self.assertEqual(resultduration.days, 7)
+
+        resultduration = _parse_duration_prescribed('P1.5W', True)
+        self.assertEqual(resultduration.days, 10.5) #Fractional weeks are allowed
+
+    def test_parse_duration_prescribed_relative_multiplefractions(self):
         with self.assertRaises(ValueError):
             #Multiple fractions are not allowed
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6.1234S', True)
 
+    def test_parse_duration_prescribed_relative_middlefraction(self):
         with self.assertRaises(ValueError):
             #Fraction only allowed on final component
             _parse_duration_prescribed('P1Y2M3DT4H5.1234M6S', True)
 
+    def test_parse_duration_prescribed_relative_outoforder(self):
         #Ensure durations are required to be in the correct order
         #https://bitbucket.org/nielsenb/aniso8601/issues/7/durations-with-time-components-before-t
         #https://bitbucket.org/nielsenb/aniso8601/issues/8/durations-with-components-in-wrong-order
@@ -330,39 +355,25 @@ class TestDurationFunctions(unittest.TestCase):
         with self.assertRaises(ValueError):
             parse_duration('PT1S1H', True)
 
+    def test_parse_duration_prescribed_relative_suffixgarbage(self):
         #Don't allow garbage after the duration
         #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
         with self.assertRaises(ValueError):
             parse_duration('P1Dasdfasdf', True)
 
+    def test_parse_duration_prescribed_relative_fractionalyear(self):
         #Fractional months and years are not defined
         #https://github.com/dateutil/dateutil/issues/40
         with self.assertRaises(ValueError):
             _parse_duration_prescribed('P1.5Y', True)
 
+    def test_parse_duration_prescribed_relative_fractionalmonth(self):
+        #Fractional months and years are not defined
+        #https://github.com/dateutil/dateutil/issues/40
         with self.assertRaises(ValueError):
             _parse_duration_prescribed('P1.5M', True)
 
-        resultduration = _parse_duration_prescribed('P1Y', True)
-        self.assertEqual(resultduration.years, 1)
-
-        resultduration = _parse_duration_prescribed('P1M', True)
-        self.assertEqual(resultduration.months, 1)
-
-        #Add the relative ‘days’ argument to the absolute day. Notice that the ‘weeks’ argument is multiplied by 7 and added to ‘days’.
-        #http://dateutil.readthedocs.org/en/latest/relativedelta.html
-        resultduration = _parse_duration_prescribed('P1W', True)
-        self.assertEqual(resultduration.days, 7)
-
-        resultduration = _parse_duration_prescribed('P1.5W', True)
-        self.assertEqual(resultduration.days, 10.5) #Fractional weeks are allowed
-
     def test_parse_duration_combined(self):
-        #Don't allow garbage after the duration
-        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
-        with self.assertRaises(ValueError):
-            parse_duration('P0003-06-04T12:30:05.5asdfasdf', True)
-
         resultduration = _parse_duration_combined('P0003-06-04T12:30:05', False)
         self.assertEqual(resultduration.days, 1279)
         self.assertEqual(resultduration.seconds, 45005)
@@ -373,12 +384,13 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.seconds, 45005)
         self.assertEqual(resultduration.microseconds, 500000)
 
-    def test_parse_duration_combined_relative(self):
+    def test_parse_duration_combined_suffixgarbage(self):
         #Don't allow garbage after the duration
         #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
         with self.assertRaises(ValueError):
             parse_duration('P0003-06-04T12:30:05.5asdfasdf', True)
 
+    def test_parse_duration_combined_relative(self):
         resultduration = _parse_duration_combined('P0003-06-04T12:30:05', True)
         self.assertEqual(resultduration.years, 3)
         self.assertEqual(resultduration.months, 6)
@@ -395,6 +407,12 @@ class TestDurationFunctions(unittest.TestCase):
         self.assertEqual(resultduration.minutes, 30)
         self.assertEqual(resultduration.seconds, 5)
         self.assertEqual(resultduration.microseconds, 500000)
+
+    def test_parse_duration_combined_relative_suffixgarbage(self):
+        #Don't allow garbage after the duration
+        #https://bitbucket.org/nielsenb/aniso8601/issues/9/durations-with-trailing-garbage-are-parsed
+        with self.assertRaises(ValueError):
+            parse_duration('P0003-06-04T12:30:05.5asdfasdf', True)
 
     def test_parse_duration_element(self):
         self.assertEqual(_parse_duration_element('P1Y2M3D', 'Y'), 1)
