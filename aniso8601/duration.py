@@ -42,7 +42,7 @@ def _parse_duration_prescribed(durationstr, relative):
         lettercount = 0;
 
         for character in durationstr.split('.')[1]:
-            if character.isalpha() == True:
+            if character.isalpha() is True:
                 lettercount += 1
 
             if lettercount > 1:
@@ -134,7 +134,7 @@ def _parse_duration_combined(durationstr, relative):
     datevalue = parse_date(datepart)
     timevalue = parse_time(timepart)
 
-    if relative == True:
+    if relative is True:
         return dateutil.relativedelta.relativedelta(years=datevalue.year, months=datevalue.month, days=datevalue.day, hours=timevalue.hour, minutes=timevalue.minute, seconds=timevalue.second, microseconds=timevalue.microsecond)
     else:
         totaldays = datevalue.year * 365 + datevalue.month * 30 + datevalue.day
@@ -155,7 +155,7 @@ def _parse_duration_element(durationstr, elementstr):
     durationendindex = durationstr.find(elementstr)
 
     for characterindex in compat.range(durationendindex - 1, 0, -1):
-        if durationstr[characterindex].isalpha() == True:
+        if durationstr[characterindex].isalpha() is True:
             durationstartindex = characterindex
             break
 
