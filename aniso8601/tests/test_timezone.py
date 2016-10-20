@@ -144,4 +144,4 @@ class TestTimezoneParserFunctions(unittest.TestCase):
         #This would raise ValueError or a TypeError if dst info is invalid
         result = datetime.datetime.now(tzinfoobject)
         #Hacky way to make sure the tzinfo is what we'd expect
-        self.assertEqual(str(result.tzinfo), '+4:00:00 UTC')
+        self.assertEqual(result.tzinfo.utcoffset(None), datetime.timedelta(hours=4))
