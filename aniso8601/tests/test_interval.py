@@ -9,6 +9,7 @@
 import unittest
 import datetime
 
+from aniso8601 import compat
 from aniso8601.interval import parse_interval, parse_repeating_interval
 
 class TestIntervalFunctions(unittest.TestCase):
@@ -213,7 +214,7 @@ class TestIntervalFunctions(unittest.TestCase):
 
         results = list(parse_repeating_interval('R11/PT1H2M/1980-03-05T01:01:00'))
 
-        for dateindex in range(0, 11):
+        for dateindex in compat.range(0, 11):
              self.assertEqual(results[dateindex], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1) - dateindex * datetime.timedelta(hours=1, minutes=2))
 
         results = list(parse_repeating_interval('R2--1980-03-05T01:01:00--1981-04-05T01:01:00', intervaldelimiter='--'))
@@ -226,7 +227,7 @@ class TestIntervalFunctions(unittest.TestCase):
 
         resultgenerator = parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00')
 
-        for dateindex in range(0, 11):
+        for dateindex in compat.range(0, 11):
              self.assertEqual(next(resultgenerator), datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1) - dateindex * datetime.timedelta(hours=1, minutes=2))
 
     def test_parse_repeating_interval_relative(self):
@@ -245,7 +246,7 @@ class TestIntervalFunctions(unittest.TestCase):
 
         results = list(parse_repeating_interval('R11/PT1H2M/1980-03-05T01:01:00', relative=True))
 
-        for dateindex in range(0, 11):
+        for dateindex in compat.range(0, 11):
              self.assertEqual(results[dateindex], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1) - dateindex * datetime.timedelta(hours=1, minutes=2))
 
         results = list(parse_repeating_interval('R2--1980-03-05T01:01:00--1981-04-05T01:01:00', intervaldelimiter='--', relative=True))
@@ -258,5 +259,5 @@ class TestIntervalFunctions(unittest.TestCase):
 
         resultgenerator = parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00', relative=True)
 
-        for dateindex in range(0, 11):
+        for dateindex in compat.range(0, 11):
              self.assertEqual(next(resultgenerator), datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1) - dateindex * datetime.timedelta(hours=1, minutes=2))
