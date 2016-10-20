@@ -14,7 +14,7 @@ from aniso8601.time import get_time_resolution, parse_time, parse_datetime, \
      _build_time, _split_tz
 from aniso8601.resolution import TimeResolution
 
-class TestTimeFunctions(unittest.TestCase):
+class TestTimeParserFunctions(unittest.TestCase):
     def test_get_time_resolution(self):
         self.assertEqual(get_time_resolution('01:23:45'), TimeResolution.Seconds)
         self.assertEqual(get_time_resolution('24:00:00'), TimeResolution.Seconds)
