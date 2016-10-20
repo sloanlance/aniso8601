@@ -168,9 +168,9 @@ Since a relative fractional month or year is not logical, a ValueError is raised
   >>> aniso8601.parse_duration('P2.1Y', relative=True)
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "aniso8601/duration.py", line 29, in parse_duration
+    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 29, in parse_duration
       return _parse_duration_prescribed(isodurationstr, relative)
-    File "aniso8601/duration.py", line 119, in _parse_duration_prescribed
+    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 150, in _parse_duration_prescribed
       raise ValueError('Fractional months and years are not defined for relative intervals.')
   ValueError: Fractional months and years are not defined for relative intervals.
 
@@ -254,11 +254,11 @@ Fractional years and months do not make sense for relative intervals. A ValueErr
   >>> aniso8601.parse_interval('P1.1Y/2001-02-28', relative=True)
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "aniso8601/interval.py", line 51, in parse_interval
+    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/interval.py", line 51, in parse_interval
       duration = parse_duration(firstpart, relative=relative)
-    File "aniso8601/duration.py", line 29, in parse_duration
+    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 29, in parse_duration
       return _parse_duration_prescribed(isodurationstr, relative)
-    File "aniso8601/duration.py", line 119, in _parse_duration_prescribed
+    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 150, in _parse_duration_prescribed
       raise ValueError('Fractional months and years are not defined for relative intervals.')
   ValueError: Fractional months and years are not defined for relative intervals.
 
