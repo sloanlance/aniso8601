@@ -11,22 +11,29 @@ import unittest
 from aniso8601.date import parse_date, _parse_year, _parse_calendar_day, _parse_calendar_month, _parse_week_day, _parse_week, _parse_ordinal_date, get_date_resolution
 from aniso8601.resolution import DateResolution
 
-class TestDateFunctions(unittest.TestCase):
-    def test_get_date_resolution(self):
+class TestDateResolutionFunctions(unittest.TestCase):
+    def test_get_date_resolution_year(self):
         self.assertEqual(get_date_resolution('2013'), DateResolution.Year)
         self.assertEqual(get_date_resolution('0001'), DateResolution.Year)
         self.assertEqual(get_date_resolution('19'), DateResolution.Year)
-        self.assertEqual(get_date_resolution('1981-04-05'), DateResolution.Day)
-        self.assertEqual(get_date_resolution('19810405'), DateResolution.Day)
+
+    def test_get_date_resolution_month(self):
         self.assertEqual(get_date_resolution('1981-04'), DateResolution.Month)
+
+    def test_get_date_resolution_week(self):
         self.assertEqual(get_date_resolution('2004-W53'), DateResolution.Week)
         self.assertEqual(get_date_resolution('2009-W01'), DateResolution.Week)
-        self.assertEqual(get_date_resolution('2004-W53-6'), DateResolution.Weekday)
         self.assertEqual(get_date_resolution('2004W53'), DateResolution.Week)
+
+    def test_get_date_resolution_year_weekday(self):
+        self.assertEqual(get_date_resolution('2004-W53-6'), DateResolution.Weekday)
         self.assertEqual(get_date_resolution('2004W536'), DateResolution.Weekday)
+
+    def test_get_date_resolution_year_ordinal(self):
         self.assertEqual(get_date_resolution('1981-095'), DateResolution.Ordinal)
         self.assertEqual(get_date_resolution('1981095'), DateResolution.Ordinal)
 
+class TestDateParserFunctions(unittest.TestCase):
     def test_parse_date(self):
         date = parse_date('2013')
         self.assertEqual(date.year, 2013)
@@ -109,6 +116,8 @@ class TestDateFunctions(unittest.TestCase):
         self.assertEqual(date.month, 1)
         self.assertEqual(date.day, 1)
 
+    def test_parse_year_nonzero(self):
+        #0 isn't a valid year
         with self.assertRaises(ValueError):
             _parse_year('0')
 
@@ -129,6 +138,8 @@ class TestDateFunctions(unittest.TestCase):
         self.assertEqual(date.month, 4)
         self.assertEqual(date.day, 1)
 
+    def test_parse_calendar_month_nohyphen(self):
+        #Hyphen is required
         with self.assertRaises(ValueError):
             _parse_calendar_month('198104')
 
