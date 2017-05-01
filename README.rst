@@ -236,7 +236,7 @@ Note that you should never try to convert a generator produced by an unbounded i
   >>> list(aniso8601.parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00'))
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "aniso8601/__init__.py", line 140, in date_generator_unbounded
+    File "aniso8601/interval.py", line 156, in _date_generator_unbounded
       currentdate += timedelta
   OverflowError: date value out of range
 
@@ -254,11 +254,13 @@ Fractional years and months do not make sense for relative intervals. A ValueErr
   >>> aniso8601.parse_interval('P1.1Y/2001-02-28', relative=True)
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/interval.py", line 51, in parse_interval
+    File "aniso8601/interval.py", line 33, in parse_interval
+      interval_parts = _parse_interval_parts(isointervalstr, intervaldelimiter, datetimedelimiter, relative)
+    File "aniso8601/interval.py", line 84, in _parse_interval_parts
       duration = parse_duration(firstpart, relative=relative)
-    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 29, in parse_duration
+    File "aniso8601/duration.py", line 29, in parse_duration
       return _parse_duration_prescribed(isodurationstr, relative)
-    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 150, in _parse_duration_prescribed
+    File "aniso8601/duration.py", line 150, in _parse_duration_prescribed
       raise ValueError('Fractional months and years are not defined for relative intervals.')
   ValueError: Fractional months and years are not defined for relative intervals.
 
