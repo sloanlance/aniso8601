@@ -86,7 +86,7 @@ def _parse_interval_parts(isointervalstr, intervaldelimiter='/', datetimedelimit
 
             #See if we need to upconvert to datetime to preserve resolution
             if firstpart.find(datetimedelimiter) != -1:
-                return (enddate, datetime.combine(enddate, datetime.min.time()) - duration)
+                return (enddate, datetime.combine(enddate, datetime.min.time()) - duration, -duration)
             else:
                 return (enddate, enddate - duration, -duration)
     elif secondpart[0] == 'P':
