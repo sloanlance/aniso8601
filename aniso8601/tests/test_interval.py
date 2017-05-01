@@ -253,6 +253,14 @@ class TestRepeatingIntervalParserFunctions(unittest.TestCase):
         self.assertEqual(results[0], datetime.datetime(year=1980, month=3, day=5, hour=1, minute=1))
         self.assertEqual(results[1], datetime.datetime(year=1981, month=4, day=5, hour=1, minute=1))
 
+        #Make sure relative is correctly applied for months
+        #https://bitbucket.org/nielsenb/aniso8601/issues/12/month-intervals-calculated-incorrectly-or
+        results = list(parse_repeating_interval('R4/2017-04-30T00:00:00/P1M', relative=True))
+        self.assertEqual(results[0], datetime.datetime(year=2017, month=4, day=30))
+        self.assertEqual(results[1], datetime.datetime(year=2017, month=5, day=30))
+        self.assertEqual(results[2], datetime.datetime(year=2017, month=6, day=30))
+        self.assertEqual(results[3], datetime.datetime(year=2017, month=7, day=30))
+
         resultgenerator = parse_repeating_interval('R/PT1H2M/1980-03-05T01:01:00', relative=True)
 
         for dateindex in compat.range(0, 11):
