@@ -60,7 +60,7 @@ def parse_interval(isointervalstr, intervaldelimiter='/', datetimedelimiter='T',
         #<start>/<duration>
         #We need to figure out if <start> is a date, or a datetime
         if firstpart.find(datetimedelimiter) != -1:
-            #<end> is a datetime
+            #<start> is a datetime
             duration = parse_duration(secondpart, relative=relative)
             startdatetime = parse_datetime(firstpart, delimiter=datetimedelimiter)
 
