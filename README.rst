@@ -120,6 +120,19 @@ A decimal fraction is always allowed on the lowest order element of an ISO 8601 
   >>> aniso8601.parse_time('23.75')
   datetime.time(23, 45)
 
+Leap seconds are currently not supported::
+
+  >>> aniso8601.parse_time('21:42:60')
+  Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    File "aniso8601/time.py", line 107, in parse_time
+      return _parse_time_naive(timestr)
+    File "aniso8601/time.py", line 136, in _parse_time_naive
+      return _resolution_map[get_time_resolution(timestr)](timestr)
+    File "aniso8601/time.py", line 199, in _parse_second_time
+      raise ValueError('Seconds must be less than 60.')
+  ValueError: Seconds must be less than 60.
+
 Parsing durations
 -----------------
 
@@ -168,9 +181,9 @@ Since a relative fractional month or year is not logical, a ValueError is raised
   >>> aniso8601.parse_duration('P2.1Y', relative=True)
   Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 29, in parse_duration
+    File "aniso8601/duration.py", line 29, in parse_duration
       return _parse_duration_prescribed(isodurationstr, relative)
-    File "/home/nielsenb/Jetfuse/aniso8601_working/aniso8601/aniso8601/duration.py", line 150, in _parse_duration_prescribed
+    File "aniso8601/duration.py", line 150, in _parse_duration_prescribed
       raise ValueError('Fractional months and years are not defined for relative intervals.')
   ValueError: Fractional months and years are not defined for relative intervals.
 
