@@ -225,6 +225,15 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.tzname(None), 'UTC')
 
         with self.assertRaises(ValueError):
+            parse_time('00:00:60')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:00:60Z')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:00:60+00:00')
+
+        with self.assertRaises(ValueError):
             parse_time('00:61')
 
         with self.assertRaises(ValueError):
@@ -279,6 +288,15 @@ class TestTimeParserFunctions(unittest.TestCase):
         tzinfoobject = resultdatetime.tzinfo
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:00:60')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:00:60Z')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:00:60+00:00')
 
         with self.assertRaises(ValueError):
             parse_datetime('1981-04-05T00:61')
@@ -376,13 +394,16 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(time.microsecond, 120000)
 
         with self.assertRaises(ValueError):
-            parse_time('00:61')
+            _parse_time_naive('00:00:60')
 
         with self.assertRaises(ValueError):
-            parse_time('00:61Z')
+            _parse_time_naive('00:00:60+00:00')
 
         with self.assertRaises(ValueError):
-            parse_time('00:61+00:00')
+            _parse_time_naive('00:61')
+
+        with self.assertRaises(ValueError):
+            _parse_time_naive('00:61+00:00')
 
     def test_parse_hour(self):
         time = _parse_hour('01')
@@ -474,6 +495,12 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(time.minute, 21)
         self.assertEqual(time.second, 28)
         self.assertEqual(time.microsecond, 512400)
+
+        with self.assertRaises(ValueError):
+            _parse_second_time('000060')
+
+        with self.assertRaises(ValueError):
+            _parse_second_time('00:00:60')
 
         with self.assertRaises(ValueError):
             _parse_second_time('006100')
