@@ -289,6 +289,13 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+00:00')
 
+        #https://bitbucket.org/nielsenb/aniso8601/issues/13/parsing-of-leap-second-gives-wildly
+        with self.assertRaises(ValueError):
+            parse_datetime('2016-12-31T23:59:60+00:00')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('2016-12-31T23:59:60')
+
         with self.assertRaises(ValueError):
             parse_datetime('1981-04-05T00:00:60')
 
