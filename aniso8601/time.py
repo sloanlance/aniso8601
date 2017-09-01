@@ -103,7 +103,7 @@ def parse_time(isotimestr):
 
     (timestr, tzstr) = _split_tz(isotimestr)
 
-    if tzstr == None:
+    if tzstr is None:
         return _parse_time_naive(timestr)
     elif tzstr == 'Z':
         return _parse_time_naive(timestr).replace(tzinfo=build_utcoffset('UTC', datetime.timedelta(hours=0)))
