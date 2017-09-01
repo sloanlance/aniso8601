@@ -224,6 +224,15 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), 'UTC')
 
+        with self.assertRaises(ValueError):
+            parse_time('00:61')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:61Z')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:61+00:00')
+
     def test_parse_datetime(self):
         resultdatetime = parse_datetime('1981-04-05T23:21:28.512400Z')
         self.assertEqual(resultdatetime.year, 1981)
@@ -270,6 +279,15 @@ class TestTimeParserFunctions(unittest.TestCase):
         tzinfoobject = resultdatetime.tzinfo
         self.assertEqual(tzinfoobject.utcoffset(None), datetime.timedelta(hours=0))
         self.assertEqual(tzinfoobject.tzname(None), '+00:00')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:61')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:61Z')
+
+        with self.assertRaises(ValueError):
+            parse_datetime('1981-04-05T00:61+00:00')
 
     def test_parse_datetime_spaceseperated(self):
         resultdatetime = parse_datetime('2004-W53-6 23:21:28.512400-12:34', ' ')
@@ -356,6 +374,15 @@ class TestTimeParserFunctions(unittest.TestCase):
         self.assertEqual(time.minute, 27)
         self.assertEqual(time.second, 24)
         self.assertEqual(time.microsecond, 120000)
+
+        with self.assertRaises(ValueError):
+            parse_time('00:61')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:61Z')
+
+        with self.assertRaises(ValueError):
+            parse_time('00:61+00:00')
 
     def test_parse_hour(self):
         time = _parse_hour('01')
