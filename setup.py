@@ -9,7 +9,7 @@ readme.close()
 
 setup(
     name='aniso8601',
-    version='1.2.2dev',
+    version='1.3.0',
     description='A library for parsing ISO 8601 strings.',
     long_description=README_TEXT,
     author='Brandon Nielsen',
