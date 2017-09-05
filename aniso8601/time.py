@@ -202,6 +202,7 @@ def _parse_second_time(timestr):
         raise ValueError('ISO 8601 minute element cannot be greater than 60.')
 
     if isohour == 24:
+        #Midnight, see 4.2.1, 4.2.3
         return datetime.time(hour=0, minute=0)
 
     return _build_time(datetime.time(hour=isohour, minute=isominute),
